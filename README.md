@@ -9,15 +9,15 @@ prior CLAToolkit. In this way, the Connected Learning toolkit is to become an xA
 
 # Road Map
 - Complete CLAToolkit UI:
--- Implement Login (complete)
--- Implement AAF SSO 
--- Implement Class creation "wizard" and social media setup (in progress)
--- Adjust style to comply with Existing dashboard style
+..- Implement Login (complete)
+..- Implement AAF SSO 
+..- Implement Class creation "wizard" and social media setup (in progress)
+..- Adjust style to comply with Existing dashboard style
 - Complete CLAtoolkit-backend:
--- Implement endpoints to support front-end functionality (in progress)
--- Implement social media api Authentication/Token Storage
--- Implement configurable data scraping messaging to queue
+..- Implement endpoints to support front-end functionality (in progress)
+..- Implement social media api Authentication/Token Storage
+..- Implement configurable data scraping messaging to queue
 - Complete CLAtoolkit-importer:
--- Refine Codebase (upgrade xAPI output to comply with latest xAPI specification)
--- Begin migration to GraphQL based Social Media API data mapping to xAPI 
+..- Refine Codebase (upgrade xAPI output to comply with latest xAPI specification)
+..- Begin migration to GraphQL based Social Media API data mapping to xAPI 
 
