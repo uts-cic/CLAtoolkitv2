@@ -1,3 +1,28 @@
-<p>
-  unit-socialmedia-setup works!
-</p>
+<div class="container">
+	<div class="row justify-content-center">
+		<!-- wizard icons to go here for UX -->
+	</div>
+	<div class="row justify-content-center">
+		<h4>Step 2: Which Social Media are Being Used?</h4>
+
+		<div class="col-10">
+			<form (submit)="submitUnitForm()">
+
+				<input type="radio" id="twitter" [(ngModel)]="twitterEnabled">
+				<label for="twitter">Twitter</label>
+
+				<input type="text" [(ngModel)]="unitFormModelStep2.twitter" *ngIf="twitterEnabled" />
+
+				<input type="radio" id="trello" [(ngModel)]="unitFormModelStep2.trello" />
+				<label for="trello">Trello</label>
+
+				<input type="radio" id="slack" [(ngModel)]="unitFormModelStep2.slack" />
+				<label for="slack">Slack</label>
+
+				<button type="submit" class="btn btn-sm btn-secondary">
+					Proceed to Data Storage 
+				</button>
+			</form>
+		</div>
+	</div>
+</div>

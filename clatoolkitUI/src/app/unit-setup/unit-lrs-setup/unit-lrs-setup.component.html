@@ -1,3 +1,28 @@
-<p>
-  unit-lrs-setup works!
-</p>
+<div class="container">
+	<div class="row justify-content-center">
+		<!-- wizard icons to go here for UX -->
+	</div>
+	<div class="row justify-content-center">
+
+		<h4>Step 3: LRS Setup <small><a href="#">What is this?</a></small></h4>
+			<form (submit)="submitAndCompleteUnitForm()">
+				<input type="radio" id="unit-default-lrs" name="unit-default-lrs" (click)="useDefaultLRS()" />
+				<label id="label-unit-default-lrs" for="unit-default-lrs">
+					Use CLtoolkit LRS
+				</label>
+
+				<input type="radio" disabled id="unit-custom-lrs" name="unit-custom-lrs" (click)="useCustomLRS()" />
+				<label id="label-unit-custom-lrs" for="unit-custom-lrs">
+					Use your own LRS
+				</label>
+
+				<!-- To be completed after MVP - See unit-lrs-setup.component for more information
+				<div class="col-6" *ngIf="usingCustomLRS">
+					<input type="text" id="unit-lrs-endpoint"
+						[(ngModel)]="unitFormModelStep1.lrsEndpoint"
+						placeholder="https://lrs.com/xapi/statements/" />
+
+					<h5>Authentication Setup</h5>
+				</div>-->
+				<button type="submit" class="btn btn-sm btn-secondary">Complete Unit Setup</button>
+			</form>
