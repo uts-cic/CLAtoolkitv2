@@ -9,17 +9,17 @@ import { UnitSetupService } from '../../services/unit-setup.service';
 })
 export class UnitSetupComponent implements OnInit {
 
-	unitFormModelStep1 = {
-		name: undefined,
-		code: undefined,
-		semester: undefined,
-		description: undefined,
+	public unitFormModelStep1 = {
+		name: '',
+		code: '',
+		semester: '',
+		description: '',
 
-		startDate: undefined,
-		endDate: undefined,
+		startDate: '',
+		endDate: '',
 
-		ethicsStatement: undefined
-	}
+		ethicsStatement: ''
+	};
 
   constructor(private unitSetupService: UnitSetupService, private router: Router) { }
 
@@ -27,6 +27,7 @@ export class UnitSetupComponent implements OnInit {
   }
 
   submitUnitForm() {
+    console.log(this.unitFormModelStep1);
   	// this.validateUnitForm(); TODO: Later if need be (getting MVP working)
 
   	this.unitSetupService.addUnitDetails(this.unitFormModelStep1);

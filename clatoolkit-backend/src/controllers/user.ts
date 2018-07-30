@@ -6,7 +6,28 @@ import * as nodemailer from "nodemailer";
 import * as passport from "passport";
 import { LocalStrategyInfo } from "passport-local";
 import { AuthToken, default as User, UserModel } from "../models/User";
+
+import { default as Unit, UnitModel } from "../models/Unit";
+
 // const request = require("express-validator");
+
+let getDbUser = async (usrEmail: string) => {
+  return User.findOne({ email: usrEmail }).exec();
+}
+
+/**
+ * GET /units
+ * Retreives and returns all Units owned by a User
+ * Also retrieves and returns Units that a User is added to (maybe)
+ */
+
+ export let getUnits = async (req: Request, res: Response) => {
+   const user = await getDbUser(req.user.email);
+
+   Unit.find({ created_by: user._id }, (err, units) => {
+     return res.status(200).json({ units: units });
+   });
+ }
 
 /**
  * GET /login

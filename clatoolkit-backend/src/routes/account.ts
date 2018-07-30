@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 
+import * as Auth from '../config/jwtAuth.middleware';
+
 import * as userController from "../controllers/user";
 
 import * as passportConfig from "../config/passport";
@@ -9,7 +11,10 @@ class Account {
     this.router = Router();
     this.init();
   }
-  private init() {/*
+  private init() {
+
+    this.router.get("/units", Auth.JwtAuthorized, userController.getUnits);
+  /*
     this.router.get("/", passportConfig.isAuthenticated, userController.getAccount);
     this.router.post("/profile", passportConfig.isAuthenticated, userController.postUpdateProfile);
     this.router.post("/password", passportConfig.isAuthenticated, userController.postUpdatePassword);

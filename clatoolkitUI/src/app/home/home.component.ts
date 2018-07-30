@@ -15,12 +15,12 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
   	this.unitService.getUnitsForUser().subscribe((res: any) => {
-  		this.units = res.units;
+      this.units = res.units;
   	});
   }
 
   setupNewUnit() {
-  	this.router.navigate(['unit-setup']);
+  	this.router.navigate(['new/unit-setup']);
   }
 
 }
