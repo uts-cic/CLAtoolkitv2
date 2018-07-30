@@ -7,10 +7,8 @@ export class UnitService {
   constructor(private http: HttpClient) { }
 
   getUnitsForUser() {
-  	const getUnitsUrl = 'http://localhost:3000/units'
-  	return this.http.get(getUnitsUrl, {
-  		headers: this.createHeaderWithAuth()
-  	});
+  	const getUnitsUrl = 'http://localhost:3000/account/units'
+  	return this.http.get(getUnitsUrl);
   }
 
   private createHeaderWithAuth(): HttpHeaders {

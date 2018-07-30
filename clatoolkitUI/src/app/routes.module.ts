@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
+import { UnitSetupStep2Guard } from './guards/unit-setup-step2.guard';
+import { UnitSetupStep3Guard } from './guards/unit-setup-step3.guard';
 
 // Component Imports
 import { AppComponent } from './app.component';
@@ -29,12 +31,12 @@ const routes: Routes = [
 	{
 		path: 'new/social-setup',
 		component: UnitSocialmediaSetupComponent,
-		canActivate: [AuthGuard]
+		canActivate: [AuthGuard, UnitSetupStep2Guard]
 	},
 	{
 		path: 'new/data-setup',
 		component: UnitLrsSetupComponent,
-		canActivate: [AuthGuard]
+		canActivate: [AuthGuard, UnitSetupStep3Guard]
 	}
 ];
 

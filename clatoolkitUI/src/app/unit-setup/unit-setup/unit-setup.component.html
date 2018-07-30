@@ -8,43 +8,43 @@
 		<div class="col-10">
 			<form (submit)="submitUnitForm()">
 				<!-- Unit title/name -->
-				<input type="text" id="unit-name" class="form-control input-sm"
+				<input type="text" id="unit-name" name="name" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.name"
 				placeholder="Unit Name" />
-				<small class="text-alert" *ngIf="formErrors.name">
+				<!--<small class="text-alert" *ngIf="formErrors.name">
 					{{formErrors.name}}
-				</small>
+				</small>-->
 				<!-- ************** -->
 
 				<!-- Unit code -->
-				<input type="text" id="unit-code" class="form-control input-sm"
+				<input type="text" id="unit-code" name="code" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.code"
 				placeholder="Unit Code (e.g. UBM123)" />
 				<!-- ************* -->
 
 				<!-- Unit Semester -->
-				<input type="text" id="unit-semester" class="form-control input-sm"
+				<input type="text" id="unit-semester" name="semester" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.semester"
 				placeholder="Unit Semester or Teaching Period" />
 				<!-- ************** -->
 
 				<!-- Unit Description -->
-				<input type="textarea" id="unit-description" class="form-control input-sm"
+				<input type="textarea" id="unit-description" name="description" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.description"
 				placeholder="Enter a Description - What is this Unit about?" />
 
 				<!-- TODO: Add a Date Picker -->
-				<input type="text" id="unit-start-date" class="form-control input-sm"
+				<input type="text" id="unit-start-date" name="start-date" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.startDate"
 				placeholder="Unit Start Date" />
 
 
 				<!-- TODO: Add a Date Picker -->
-				<input type="text" id="unit-end-date" class="form-control input-sm"
+				<input type="text" id="unit-end-date" name="end-date" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.endDate"
 				placeholder="Unit End Date" />
 
-				<input type="textarea" id="ethics-statement" class="form-control input-sm"
+				<input type="textarea" id="ethics-statement" name="ethics" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.ethicsStatement"
 				placeholder="Enter an Ethics Statement (optional)" />
 

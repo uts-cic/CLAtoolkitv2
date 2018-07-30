@@ -28,6 +28,7 @@ import accountRouter from "./routes/account";
 import apiRouter from "./routes/api";
 import oauthRouter from "./routes/oauth";
 import authRouter from "./routes/auth";
+import unitRouter from "./routes/unit";
 
 
 /**
@@ -98,6 +99,7 @@ class App {
    * Primary app routes.
    */
   private routes(): void {
+    this.express.use("/units", unitRouter);
     this.express.use("/auth", authRouter);
     this.express.use("/api", apiRouter);
     // this.express.use("/auth", oauthRouter);

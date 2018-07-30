@@ -4,17 +4,20 @@
 	</div>
 	<div class="row justify-content-center">
 
-		<h4>Step 3: LRS Setup <small><a href="#">What is this?</a></small></h4>
+		<h4 style="display: block;">Step 3: LRS Setup <small><a href="#">What is this?</a></small></h4>
+		<div class="col-10">
 			<form (submit)="submitAndCompleteUnitForm()">
-				<input type="radio" id="unit-default-lrs" name="unit-default-lrs" (click)="useDefaultLRS()" />
-				<label id="label-unit-default-lrs" for="unit-default-lrs">
-					Use CLtoolkit LRS
-				</label>
-
-				<input type="radio" disabled id="unit-custom-lrs" name="unit-custom-lrs" (click)="useCustomLRS()" />
-				<label id="label-unit-custom-lrs" for="unit-custom-lrs">
-					Use your own LRS
-				</label>
+				<div class="form-group">
+					<input type="radio" id="unit-default-lrs" name="unit-default-lrs" (click)="useDefaultLRS()" />
+					<label id="label-unit-default-lrs" for="unit-default-lrs">
+						Use CLtoolkit LRS
+					</label>
+				</div>
+				<div class="form-group">
+					<input type="radio" disabled id="unit-custom-lrs" name="unit-custom-lrs" (click)="useCustomLRS()" />
+					<label id="label-unit-custom-lrs" for="unit-custom-lrs">
+						Use your own LRS
+					</label>
 
 				<!-- To be completed after MVP - See unit-lrs-setup.component for more information
 				<div class="col-6" *ngIf="usingCustomLRS">
@@ -24,5 +27,7 @@
 
 					<h5>Authentication Setup</h5>
 				</div>-->
+				</div>
 				<button type="submit" class="btn btn-sm btn-secondary">Complete Unit Setup</button>
 			</form>
+		</div>

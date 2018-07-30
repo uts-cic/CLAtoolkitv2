@@ -2,7 +2,7 @@
 	<div class="row justify-content-center">
 		<div class="col-6">
 			<p *ngIf="units.length == 0">There's no units here, create one by clicking the button below or by receiving an invite to another unit.</p>
-			<ul *ngIf="unit.length > 0">
+			<ul *ngIf="units.length > 0">
 				<li *ngFor="let unit of units">{{unit.name}}</li>
 			</ul>	
 		</div>

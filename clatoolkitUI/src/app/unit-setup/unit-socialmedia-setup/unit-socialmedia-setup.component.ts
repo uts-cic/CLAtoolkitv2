@@ -11,13 +11,13 @@ import { UnitSetupService } from '../../services/unit-setup.service';
 })
 export class UnitSocialmediaSetupComponent implements OnInit {
 
-	twitterEnabled: boolean;
+	twitterEnabled: boolean = false;
 
 	unitFormModelStep2 = {
-		twitter: undefined, // string: hashtag
-		trello: undefined, // Boolean
-		github: undefined, // Boolean
-		slack: undefined // Boolean
+		twitter: '', // string: hashtag
+		trello: false, // Boolean
+		github: false, // Boolean
+		slack: false // Boolean
 	}
 
   constructor(private unitSetupService: UnitSetupService, private router: Router) { }
@@ -26,10 +26,15 @@ export class UnitSocialmediaSetupComponent implements OnInit {
   }
 
   submitUnitForm() {
+    console.log(this.unitFormModelStep2);
   	// this.validateSocialMediaInput() // Todo: later if required
 
   	this.unitSetupService.addSocialMediaDetails(this.unitFormModelStep2);
-  	this.router.navigate(['new/']);
+  	this.router.navigate(['new/data-setup']);
+  }
+
+  toggleHashtagField() {
+    this.twitterEnabled = !this.twitterEnabled;
   }
 
 }

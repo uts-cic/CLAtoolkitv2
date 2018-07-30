@@ -7,17 +7,22 @@
 
 		<div class="col-10">
 			<form (submit)="submitUnitForm()">
+				<div class="form-group">
+					<input type="checkbox" name="twitter" (click)="toggleHashtagField()">
+					<label for="twitter">Twitter</label>
 
-				<input type="radio" id="twitter" [(ngModel)]="twitterEnabled">
-				<label for="twitter">Twitter</label>
+					<input type="text" name="twitter-hashtag" [(ngModel)]="unitFormModelStep2.twitter" *ngIf="twitterEnabled == true" placeholder="Twitter Hashtags (comma separated)" />
+				</div>
 
-				<input type="text" [(ngModel)]="unitFormModelStep2.twitter" *ngIf="twitterEnabled" />
+				<div class="form-group">
+					<input type="checkbox" name="trello" [(ngModel)]="unitFormModelStep2.trello" />
+					<label for="trello">Trello</label>
+				</div>
 
-				<input type="radio" id="trello" [(ngModel)]="unitFormModelStep2.trello" />
-				<label for="trello">Trello</label>
-
-				<input type="radio" id="slack" [(ngModel)]="unitFormModelStep2.slack" />
-				<label for="slack">Slack</label>
+				<div class="form-group">
+					<input type="checkbox" name="slack" [(ngModel)]="unitFormModelStep2.slack" />
+					<label for="slack">Slack</label>
+				</div>
 
 				<button type="submit" class="btn btn-sm btn-secondary">
 					Proceed to Data Storage 
