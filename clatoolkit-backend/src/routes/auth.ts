@@ -4,7 +4,7 @@ import * as authController from "../controllers/auth";
 
 import * as passportConfig from "../config/passport";
 
-import * as jwtAuth from "../config/jwtAuth.middleware";
+import * as Auth from "../config/jwtAuth.middleware";
 
 class Account {
   public router: Router;
@@ -15,6 +15,7 @@ class Account {
   private init() {
     this.router.post("/login", authController.postLogin);
     this.router.post("/register", authController.postSignup);
+    this.router.post("/tokenCheck", Auth.JwtAuthorized, authController.postUserSocialTokenExists);
     /*
     this.router.get("/", passportConfig.isAuthenticated, userController.getAccount);
     this.router.post("/profile", passportConfig.isAuthenticated, userController.postUpdateProfile);
