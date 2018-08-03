@@ -22,7 +22,7 @@ export type UserModel = mongoose.Document & {
 export interface AuthToken {
   accessToken: string;
   accessSecret: string;
-  kind: string;
+  platform: string;
 }
 
 const userSchema = new mongoose.Schema({

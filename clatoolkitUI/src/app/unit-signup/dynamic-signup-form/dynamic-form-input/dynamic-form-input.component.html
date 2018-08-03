@@ -1,0 +1,11 @@
+<div [formGroup]="form">
+	<label [attr.for]="input.key">{{input.label}}</label>
+
+	<input [formControlName]="input.key"
+		[id]="input.key" [type]="input.type">
+	<button *ngIf="!userHasTokenForPlatform" type="button" (click)="attachSocialMedia()">Attach your {{input.key}} account</button>
+
+	<!-- Load social media options from backend (new component), e.g.: Trello boards, github repos, slack channels, etc -->
+
+	<div class="errorMessage" *ngIf="!isValid">{{input.label}} is required</div>
+</div>

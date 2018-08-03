@@ -12,12 +12,12 @@ export type UnitModel = mongoose.Document & {
   users: string[],
   enabled: boolean,
   platforms: UnitPlatform[],
-  attached_user_platforms: UserUnitPlatform[],
+  attached_user_platforms: string[], // UserUnitPlatform[],
   lrs: string,
   // retrieval_criterion: CourseRetrievalCriterion,
 
 	created_by: string
-}
+};
 // tslint:disable-next-line:interface-name
 export interface UnitPlatform {
 	platform: string;
@@ -26,7 +26,7 @@ export interface UnitPlatform {
 
 export interface UserUnitPlatform {
 	platform: string;
-	[key: string]: string
+	[key: string]: string;
 }
 
 const unitSchema = new mongoose.Schema({

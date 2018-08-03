@@ -16,20 +16,23 @@ const JWT_SECRET = process.env.JWT_SECRET;
  */
 export let postLogin = (req: Request, res: Response) => {
   const formData = req.body.form;
-
+  console.log("LOGIN: ", formData);
   User.findOne({ email: formData.email }, (err, userDoc) => {
     if (err) { return res.status(400).json({ error: err }); }
-
+    console.log("err: ", err);
+    console.log("userDoc: ", userDoc);
     if (userDoc) {
       userDoc.comparePassword(formData.password, (err, match) => {
         if (err) { return res.status(400).json({ error: err}); }
-
+        console.log("match: ", match);
+        console.log("err: ", err);
         if (match) {
           const frontEndUser = {
             email: userDoc.email
           };
 
           const token = jwt.sign(frontEndUser, JWT_SECRET);
+          console.log("token: ", token);
           return res.status(200).json({ token: token });
         }
 

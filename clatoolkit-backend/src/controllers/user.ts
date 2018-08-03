@@ -11,9 +11,9 @@ import { default as Unit, UnitModel } from "../models/Unit";
 
 // const request = require("express-validator");
 
-let getDbUser = async (usrEmail: string) => {
+const getDbUser = async (usrEmail: string) => {
   return User.findOne({ email: usrEmail }).exec();
-}
+};
 
 /**
  * GET /units
@@ -27,7 +27,7 @@ let getDbUser = async (usrEmail: string) => {
    Unit.find({ created_by: user._id }, (err, units) => {
      return res.status(200).json({ units: units });
    });
- }
+ };
 
 /**
  * GET /login

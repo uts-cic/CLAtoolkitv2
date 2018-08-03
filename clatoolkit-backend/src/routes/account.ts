@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 
-import * as Auth from '../config/jwtAuth.middleware';
+import * as Auth from "../config/jwtAuth.middleware";
 
 import * as userController from "../controllers/user";
 

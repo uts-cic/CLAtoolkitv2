@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 
-import * as Auth from '../config/jwtAuth.middleware';
+import * as Auth from "../config/jwtAuth.middleware";
 
 import * as unitController from "../controllers/unit";
 
@@ -12,6 +12,7 @@ class Unit {
   }
   private init() {
     this.router.post("/", Auth.JwtAuthorized, unitController.postUnit);
+    this.router.get("/:id", Auth.JwtAuthorized, unitController.getUnitById);
     // this.router.get("/units", Auth.JwtAuthorized, userController.getUnits);
 
   }

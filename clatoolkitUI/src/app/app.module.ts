@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 // Modules
@@ -24,6 +24,9 @@ import { AuthTokenInterceptor } from './interceptors/auth-token.interceptor';
 import { AuthGuard } from './guards/auth.guard';
 import { UnitSetupStep2Guard } from './guards/unit-setup-step2.guard';
 import { UnitSetupStep3Guard } from './guards/unit-setup-step3.guard';
+import { UnitSignupComponent } from './unit-signup/unit-signup.component';
+import { DynamicSignupFormComponent } from './unit-signup/dynamic-signup-form/dynamic-signup-form.component';
+import { DynamicFormInputComponent } from './unit-signup/dynamic-signup-form/dynamic-form-input/dynamic-form-input.component';
 
 
 
@@ -36,12 +39,16 @@ import { UnitSetupStep3Guard } from './guards/unit-setup-step3.guard';
     UnitSetupComponent,
     UnitSocialmediaSetupComponent,
     UnitLrsSetupComponent,
+    UnitSignupComponent,
+    DynamicSignupFormComponent,
+    DynamicFormInputComponent,
   ],
   imports: [
   	Router,
   	HttpClientModule,
     BrowserModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [
   	AuthService,

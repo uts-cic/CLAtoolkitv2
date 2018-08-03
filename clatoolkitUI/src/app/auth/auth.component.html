@@ -3,12 +3,12 @@
 		<div class="col-4">
 			<h4>Login</h4>
 			<form (submit)="loginSubmit()">
-				<input type="text" id="login-email" class="form-control input-sm" 
-				[(ngModel)]="formModel.email" 
+				<input type="text"  class="form-control input-sm" 
+				[(ngModel)]="formModel.email" name="email"
 				placeholder="Email" 
 				/>
-				<input type="password" id="login-password" class="form-control input-sm"
-				[(ngModel)]="formModel.password"
+				<input type="password" class="form-control input-sm"
+				[(ngModel)]="formModel.password" name="password" 
 				placeholder="Password" />
 
 				<button type="submit" class="btn btn-sm btn-secondary" (click)="loginSubmit()">Log In</button>
