@@ -11,6 +11,24 @@ import * as jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
+ * POST /tokenCheck
+ * Returns true/false if user has a Social media token for specified platform
+ */
+export let postUserSocialTokenExists = (req: Request, res: Response) => {
+  const platformToCheck = req.body.platform;
+
+  User.findOne({ email: req.user.email }, (err, userDoc) => {
+    if (err) { return res.status(400).json({ error: err}); }
+
+    if (userDoc) {                // Array<Object: { platform: string }>.some returns true if object.platform == platformToCheck
+      return res.status(200).json({ exists: userDoc.tokens.some(e => e.platform == platformToCheck) });
+    } else {
+      return res.status(400).json({ error: "User not found" });
+    }
+  });
+};
+
+/**
  * POST /login
  * Sign in using email and password.
  */

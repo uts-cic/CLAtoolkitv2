@@ -26,7 +26,7 @@ export class DynamicFormInputComponent implements OnInit {
   		if (res.error) { console.error("Error checking whether user has sm token for platform " +
   			this.input.key + ": " + res.error); }
 
-  		this.userHasTokenForPlatform = res.result;
+  		this.userHasTokenForPlatform = res.exists;
   	});
   }
 
