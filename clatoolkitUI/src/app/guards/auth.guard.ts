@@ -11,8 +11,14 @@ export class AuthGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     
+    console.log("next: ", next);
     if (!this.authService.isLoggedIn()) {
-    	this.router.navigate(['login']);
+      // Slight behaviour change - return user to page they were trying to 
+      // access previously after login/signup, to do this, we're adding
+      // url query param "next", which will determine where login controller
+      // redirects after login/signup
+
+    	this.router.navigate(['login'], { queryParams: { next: next.routeConfig.path }});
     	return false;
     }
 

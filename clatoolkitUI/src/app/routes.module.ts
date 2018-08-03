@@ -13,6 +13,7 @@ import { HomeComponent } from './home/home.component';
 import { UnitSetupComponent } from './unit-setup/unit-setup/unit-setup.component';
 import { UnitSocialmediaSetupComponent } from './unit-setup/unit-socialmedia-setup/unit-socialmedia-setup.component';
 import { UnitLrsSetupComponent } from './unit-setup/unit-lrs-setup/unit-lrs-setup.component';
+import { UnitSignupComponent } from './unit-signup/unit-signup.component';
 
 
 const routes: Routes = [
@@ -22,7 +23,10 @@ const routes: Routes = [
 	  component: HomeComponent,
 	  canActivate: [AuthGuard] 
 	},
-	// TODO: WIll probably require canActivate Guards for each stepped part of the form drawing from UnitSetupService
+	{ path: 'unit-signup/:unitId',
+	  component: UnitSignupComponent,
+	  canActivate: [AuthGuard]
+	},
 	{
 		path: 'new/unit-setup',
 		component: UnitSetupComponent,

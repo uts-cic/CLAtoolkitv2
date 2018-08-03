@@ -1,0 +1,10 @@
+
+		<form (ngSubmit)="submitSignUpForm()" [formGroup]="form">
+			<div *ngFor="let input of inputs" class="form-row">
+				<app-dynamic-form-input [input]="input" [form]="form"></app-dynamic-form-input>
+			</div>
+
+			<div class="form-row">
+				<button type="submit" [disabled]="!form.valid">Sign Up</button>
+			</div>
+		</form>

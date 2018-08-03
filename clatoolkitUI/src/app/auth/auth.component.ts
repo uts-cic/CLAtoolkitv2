@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -24,23 +24,32 @@ export class AuthComponent implements OnInit {
 		errors: undefined
 	}
 
-  constructor(private authService: AuthService, private router: Router) { }
+  nextRoute: string;
+
+  constructor(private authService: AuthService, private router: Router, private activeRoute: ActivatedRoute) { }
 
   ngOnInit() {
+    console.log('this.activeRoute.snapshot.params: ', this.activeRoute.snapshot.params);
+    this.activeRoute.queryParams.subscribe(params => {
+      console.log('params: ', params);
+
+      this.nextRoute = params.next;
+    });
   }
 
   registerSubmit() {
   	if (!this.formModel.validate()) {
   		console.error("Error occurred registering user: ", this.formModel.errors);
   	} else {
-  		this.authService.registerUser(this.formModel, (err: any) => {
+  		this.authService.registerUser(this.formModel, this.nextRoute, (err: any) => {
   			if (err) { console.error("Error occurred registering user: ", err); }
   		});
   	}
   }
 
   loginSubmit() {
-  	this.authService.loginUser(this.formModel, (err: any) => {
+    console.log(this.formModel);
+  	this.authService.loginUser(this.formModel, this.nextRoute, (err: any) => {
   		if (err) { console.error("Error occurred logging in: ", err); }
   	});
   }

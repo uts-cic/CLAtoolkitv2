@@ -12,7 +12,7 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  registerUser(formData, done) {
+  registerUser(formData, nextRoute, done) {
   	const registerUrl = 'http://localhost:3000/auth/register/';
 
   	delete formData.passwordConf;
@@ -24,13 +24,13 @@ export class AuthService {
   			const decoded = this.jwt.decodeToken(res.token);
   			this.user = decoded;
   			localStorage.setItem('clatk-token', res.token);
-  			this.router.navigate(['/home']);
+  			this.router.navigate([nextRoute]);
   			// done(undefined);
   		}
   	})
   }
 
-  loginUser(formData, done) {
+  loginUser(formData, nextRoute, done) {
   	const loginUrl = 'http://localhost:3000/auth/login/';
 
   	delete formData.passwordConf;
@@ -42,10 +42,15 @@ export class AuthService {
   			const decoded = this.jwt.decodeToken(res.token);
   			this.user = decoded;
   			localStorage.setItem('clatk-token', res.token);
-  			this.router.navigate(['/home']);
+  			this.router.navigate([nextRoute]);
   			// done(undefined);
   		}
   	});
+  }
+
+  userHasSocialMediaTokenFor(socialMediaPlatform: string) {
+    const userSocialMediaTokenUrl = 'http://localhost:3000/auth/tokenCheck/';
+    return this.http.post(userSocialMediaTokenUrl, { platform: socialMediaPlatform });
   }
 
   isLoggedIn() {

@@ -6,10 +6,15 @@ import * as request from "request";
 
 // import { User, UserType } from '../models/User';
 import { NextFunction, Request, Response } from "express";
-import { default as User } from "../models/User";
+import { default as User, AuthToken } from "../models/User";
+
+// Strategy Imports
+import * as passportTrello from "passport-trello";
+
 
 const LocalStrategy = passportLocal.Strategy;
 const FacebookStrategy = passportFacebook.Strategy;
+const TrelloStrategy = passportTrello.Strategy;
 
 passport.serializeUser<any, any>((user, done) => {
   done(undefined, user.id);
@@ -21,24 +26,34 @@ passport.deserializeUser((id, done) => {
   });
 });
 
-/**
- * Sign in using Email and Password.
- */
-passport.use(new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-  User.findOne({ email: email.toLowerCase() }, (err, user: any) => {
+const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: any, profile: any, done: any, req: any) => {
+    // All Passport social login libraries MUST return request to match users to social media tokens
+    // A user MUST also exist in the toolkit in order to match users with their social tokens
+    // In the future, users might be able to sign-up/login using their social media accounts
+    // But this is beyond the scope of the project at the moment.
+  if ((req == undefined) || !req.user) { return done("User does not exist"); }
+
+  User.findOne({ email: req.user.email }, (err, existingUser) => {
     if (err) { return done(err); }
-    if (!user) {
-      return done(undefined, false, { message: `Email ${email} not found.` });
+
+    if (existingUser) {
+       const token: AuthToken = {
+         accessToken: accessToken,
+         accessSecret: refreshOrSecretToken,
+         platform: provider
+       };
+
+       existingUser.tokens.push(token);
+
+       existingUser.save((err: Error, user) => {
+         return done(err, user);
+       });
+    } else {
+      return done("User " + req.user.email + " does not exist in toolkit.");
     }
-    user.comparePassword(password, (err: Error, isMatch: boolean) => {
-      if (err) { return done(err); }
-      if (isMatch) {
-        return done(undefined, user);
-      }
-      return done(undefined, false, { message: "Invalid email or password." });
-    });
   });
-}));
+
+}; 
 
 /**
  * OAuth Strategy Overview
@@ -119,6 +134,25 @@ passport.use(new FacebookStrategy({
 }));
 
 /**
+ * Trello Sign In
+ */
+if (process.env.TRELLO_ID && process.env.TRELLO_SECRET) {
+  passport.use(new TrelloStrategy({
+    consumerKey: process.env.TRELLO_ID,
+    consumerSecret: process.env.TREOLL_SECRET,
+    callbackURL: "/api/trello/callback",
+    passReqToCallback: true,
+    trelloParams: {
+      scope: "read,write",
+      name: process.env.TRELLO_APP_NAME,
+      expiration: "never"
+    }}, (req: any, token: any, tokenSecret: any, profile: any, cb: any) => {
+      processSocial("trello", token, tokenSecret, profile, cb, req);
+  }));
+}
+
+
+/**
  * Login Required middleware.
  */
 export let isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
@@ -140,3 +174,25 @@ export let isAuthorized = (req: Request, res: Response, next: NextFunction) => {
     res.redirect(`/auth/${provider}`);
   }
 };
+
+
+/**
+ * Sign in using Email and Password.
+ *
+
+ TODO: Implement 
+passport.use(new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
+  User.findOne({ email: email.toLowerCase() }, (err, user: any) => {
+    if (err) { return done(err); }
+    if (!user) {
+      return done(undefined, false, { message: `Email ${email} not found.` });
+    }
+    user.comparePassword(password, (err: Error, isMatch: boolean) => {
+      if (err) { return done(err); }
+      if (isMatch) {
+        return done(undefined, user);
+      }
+      return done(undefined, false, { message: "Invalid email or password." });
+    });
+  });
+}));*/
