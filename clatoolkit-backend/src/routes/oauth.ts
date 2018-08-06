@@ -4,6 +4,8 @@ import * as passport from "passport";
 
 import * as apiController from "../controllers/api";
 
+import * as Auth from "../config/jwtAuth.middleware";
+
 import * as passportConfig from "../config/passport";
 class Oauth {
   public router: Router;
@@ -17,6 +19,17 @@ class Oauth {
       passport.authenticate("facebook", { failureRedirect: "/login" }), (req, res) => {
         res.redirect(req.session.returnTo || "/");
       });
+
+    this.router.get("/trello", Auth.JwtAuthorized, passport.authenticate("trello"));
+    this.router.get("/trello/callback", passport.authenticate("trello"), (req: Request, res: Response) => {
+      // console.log("TRELLO CALLBACK: ", req);
+      const returnURL = req.session.clatkReturnTo;
+      delete req.session.clatkReturnTo;
+
+      res.redirect(returnURL);
+    });
+  
+
   }
 }
 

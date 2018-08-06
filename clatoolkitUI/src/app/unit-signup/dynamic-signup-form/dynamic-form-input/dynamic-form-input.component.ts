@@ -4,6 +4,7 @@ import { FormGroup } from '@angular/forms';
 import { InputBase } from '../input-base';
 
 import { AuthService } from '../../../services/auth.service';
+import { DynamicFormService } from '../dynamic-form.service';
 
 @Component({
   selector: 'app-dynamic-form-input',
@@ -19,7 +20,7 @@ export class DynamicFormInputComponent implements OnInit {
 
 	get isValid() { return this.form.controls[this.input.key].valid; }
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private formService: DynamicFormService) { }
 
   ngOnInit() {
   	this.authService.userHasSocialMediaTokenFor(this.input.key).subscribe((res: any) => {
@@ -28,6 +29,12 @@ export class DynamicFormInputComponent implements OnInit {
 
   		this.userHasTokenForPlatform = res.exists;
   	});
+  }
+
+  attachSocialMedia(): void {
+
+  	window.location.href = 'http://localhost:3000/social/' + this.input.key +
+  	'?user=' + localStorage.getItem('clatk-token');
   }
 
 }
