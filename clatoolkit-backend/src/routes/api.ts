@@ -12,7 +12,6 @@ class Api {
     this.init();
   }
   private init() {
-    this.router.get("/", apiController.getApi);
     this.router.get("/facebook", passportConfig.isAuthenticated, apiController.getFacebook);
   }
 }

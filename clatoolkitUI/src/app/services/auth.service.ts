@@ -48,9 +48,27 @@ export class AuthService {
   	});
   }
 
+
+  // TODO: Refactor social media stuff to seperate service
   userHasSocialMediaTokenFor(socialMediaPlatform: string) {
     const userSocialMediaTokenUrl = 'http://localhost:3000/auth/tokenCheck/';
     return this.http.post(userSocialMediaTokenUrl, { platform: socialMediaPlatform });
+  }
+
+  async getSocialMediaOptionsForUser(socialMediaPlatform: string) {
+    const userSocialMediaGetOptsUrl = 'http://localhost:3000/social/trello/boards';
+    let opts = undefined;
+    return this.http.get(userSocialMediaGetOptsUrl).toPromise().then((res: any) => {
+      // List of trello boards and ids
+      if (res.error) { console.error("Error attempting to retrieve trello boards: ", res.error); }
+
+      else {
+        console.log("Returning ", res.boards);
+        return res.boards;
+      }
+    });
+
+    //return opts;
   }
 
   isLoggedIn() {

@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { InputBase } from './dynamic-signup-form/input-base';
 
 import { UnitService } from '../services/unit.service';
+import { DynamicFormService } from './dynamic-signup-form/dynamic-form.service';
 
 @Component({
   selector: 'app-unit-signup',
@@ -14,9 +15,10 @@ export class UnitSignupComponent implements OnInit {
 
 	unit;
 	inputs: InputBase<any>[] = [];
+	loading: boolean = true;
 
   constructor(private router: Router, private route: ActivatedRoute,
-  	private unitService: UnitService) { }
+  	private unitService: UnitService, private formService: DynamicFormService) { }
 
   ngOnInit() {
   	const unitId = this.route.snapshot.params.unitId;
@@ -28,7 +30,10 @@ export class UnitSignupComponent implements OnInit {
 
   		console.log("GOT UNITS: ", this.unit);
 
-  		this.inputs = this.unitService.getSignUpInputsFor(this.unit);
+  		this.formService.getSignUpInputsFor(this.unit).then((inputs: InputBase<any>[]) => {
+  			this.inputs = inputs;
+  			this.loading = false;
+  		});
   	});
 
   	
