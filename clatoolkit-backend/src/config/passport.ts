@@ -31,9 +31,14 @@ const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: an
     // A user MUST also exist in the toolkit in order to match users with their social tokens
     // In the future, users might be able to sign-up/login using their social media accounts
     // But this is beyond the scope of the project at the moment.
-  if ((req == undefined) || !req.user) { return done("User does not exist"); }
 
-  User.findOne({ email: req.user.email }, (err, existingUser) => {
+  // Social signup, user saved to session
+  console.log("processSocial: req.session: ", req.session);
+
+  const userParam = req.session.user.email;
+  delete req.session.user;
+
+  User.findOne({ email: userParam }, (err, existingUser) => {
     if (err) { return done(err); }
 
     if (existingUser) {
@@ -43,10 +48,16 @@ const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: an
          platform: provider
        };
 
-       existingUser.tokens.push(token);
+       console.log("TOKEN: ", token);
 
-       existingUser.save((err: Error, user) => {
-         return done(err, user);
+       existingUser.tokens = existingUser.tokens.concat([token]);
+
+       console.log("processSocia: existingUser: ", existingUser);
+
+       existingUser.save((err: Error) => {
+         if (err) { done(err); }
+
+         return done(err, existingUser);
        });
     } else {
       return done("User " + req.user.email + " does not exist in toolkit.");
@@ -139,8 +150,8 @@ passport.use(new FacebookStrategy({
 if (process.env.TRELLO_ID && process.env.TRELLO_SECRET) {
   passport.use(new TrelloStrategy({
     consumerKey: process.env.TRELLO_ID,
-    consumerSecret: process.env.TREOLL_SECRET,
-    callbackURL: "/api/trello/callback",
+    consumerSecret: process.env.TRELLO_SECRET,
+    callbackURL: "/social/trello/callback",
     passReqToCallback: true,
     trelloParams: {
       scope: "read,write",

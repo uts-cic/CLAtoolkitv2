@@ -102,7 +102,7 @@ class App {
     this.express.use("/units", unitRouter);
     this.express.use("/auth", authRouter);
     this.express.use("/api", apiRouter);
-    // this.express.use("/auth", oauthRouter);
+    this.express.use("/social", oauthRouter);
     this.express.use("/account", accountRouter);
   }
 
