@@ -24,7 +24,7 @@ export let JwtAuthorized = (req: Request, res: Response, next: NextFunction) => 
 
 			if (isSocialSignUp) { 
 				req.session.user = decoded; 
-				req.session.clatkReturnTo = req.header('referer');
+				req.session.clatkReturnTo = req.header("referer");
 			}
 
 			next();

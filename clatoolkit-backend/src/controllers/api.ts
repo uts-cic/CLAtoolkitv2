@@ -4,7 +4,7 @@ import * as async from "async";
 import { NextFunction, Request, Response } from "express";
 import * as graph from "fbgraph";
 import * as request from "request";
-import { default as User, UserModel } from '../models/User';
+import { default as User, UserModel } from "../models/User";
 
 
 /**
@@ -24,7 +24,7 @@ export let getTrelloBoards = (req: Request, res: Response) => {
   
 
   User.findOne({ email: req.user.email }, (err, user: UserModel) => {
-    const userToken = user.tokens.find(tok => tok.platform == 'trello').accessToken;
+    const userToken = user.tokens.find(tok => tok.platform == "trello").accessToken;
     const trelloBoardApiEndpoint = `https://api.trello.com/1/members/me/boards?key=${key}&token=${userToken}`;
 
     request(trelloBoardApiEndpoint, (err, response, body) => {
@@ -32,14 +32,14 @@ export let getTrelloBoards = (req: Request, res: Response) => {
         console.log("Error grabbing trello boards, error: " + err + ". Status Code: " + response.statusCode);
       }
 
-      let boardsResponse = [];
+      const boardsResponse = [];
       for (const board of JSON.parse(body)) {
         boardsResponse.push({ key: board.id, value: board.name });
       }
 
       console.log("RETURNING: ", boardsResponse);
       return res.json({ boards: boardsResponse});
-    })
+    });
   });
 
 };
