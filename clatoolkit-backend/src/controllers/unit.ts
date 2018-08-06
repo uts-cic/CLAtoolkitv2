@@ -115,8 +115,8 @@ export let postUnit = async (req: Request, res: Response) => {
  */
 export let postSignUp = async (req: Request, res: Response) => {
 	const user = await getDbUser(req.user.email);
-	const unitId = req.body.unitId;
-	const userPlatforms = req.body.userPlatforms;
+	const unitId = req.params.id;
+	const userPlatforms = req.body;
 
 	// Check that user is not already in the unit
 	Unit.findById(unitId, (err: any, unit: UnitModel) => {
@@ -128,36 +128,51 @@ export let postSignUp = async (req: Request, res: Response) => {
 			return res.status(400).json({error: "User already signed up to unit."});
 		}
 
-		unit.users.push(user._id);
+		unit.users = unit.users.concat([user._id]);
 		
 		// Add user Platform information to UnitUserPlatform collection in mongodb
 		// We don't add this to Unit because of potientially sensetive information (social media IDs)
-		// And Units are sent to frontend where anyone technically inclined could 
-		// read that information
+		// And Units are sent to frontend (where anyone technically inclined could 
+		// read that information)
 
+		// e.g: { 'trello': 'trello-board-id' }
+		const savedUserPlatformIds: string[] = [];
+		const userPlatformDocs: UnitUserPlatformModel[] = [];
 		for (const key in userPlatforms) {
-			const platform = userPlatforms[key];
 			// Create Userplatform record
 			const userPlatform = new UnitUserPlatform({
-				platform: platform.platform,
-				platformIdentifier: platform.identifier,
+				platform: key,
+				platformIdentifier: userPlatforms[key],
 				belongsTo: user._id
 			});
 
-			// Save userplatform record and save ID to unit.attached_user_platforms for reference
+			userPlatformDocs.push(userPlatform);
+
+			// console.log("userPlatform: ", userPlatform);
+
+			/* Save userplatform record and save ID to unit.attached_user_platforms for reference
 			userPlatform.save((err, savedUserPlatform) => {
-				unit.attached_user_platforms.push(savedUserPlatform._id);
-			});
+				console.log("savedUserPlatform: ", savedUserPlatform);
+				//unit.attached_user_platforms = unit.attached_user_platforms.concat([savedUserPlatform._id]);
+				savedUserPlatformIds.push(savedUserPlatform._id);
+			}); */
 		}
 
-		// Update the Unit
-		unit.save((err) => {
-			if (err) { return res.status(400).json({error: err}); }
+		UnitUserPlatform.collection.insertMany(userPlatformDocs, (err, savedDocs) => {
+			
+			unit.attached_user_platforms = unit.attached_user_platforms.concat(
+				savedDocs.insertedIds.map((doc) => doc.toString())
+			);
 
-			return res.status(200).json({success: true});
-		});
+			// Update the Unit
+			unit.save((err) => {
+				if (err) { return res.status(400).json({error: err}); }
 
+				return res.status(200).json({success: true});
+			});
+		})
 
+		// unit.attached_user_platforms = unit.attached_user_platforms.concat(savedUserPlatformIds);
 	});
 };
 

@@ -23,6 +23,7 @@ export class UnitSignupComponent implements OnInit {
   ngOnInit() {
   	const unitId = this.route.snapshot.params.unitId;
   	// console.log("this.route.snapshot.params: ", this.route.snapshot.params);
+    this.unitService.setSelectedUnit(unitId);
   	this.unitService.getUnitById(unitId).subscribe((res: any) => {
   		if (res.error) { console.error("There was an error retreiving unit with id: " + unitId); }
 
