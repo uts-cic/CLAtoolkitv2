@@ -55,6 +55,17 @@ export class AuthService {
     return this.http.post(userSocialMediaTokenUrl, { platform: socialMediaPlatform });
   }
 
+  async asyncUserHasSocialMediaTokenFor(socialMediaPlatform: string) {
+    const userSocialMediaTokenUrl = 'http://localhost:3000/auth/tokenCheck/';
+    return this.http.post(userSocialMediaTokenUrl, { platform: socialMediaPlatform }).toPromise()
+      .then((res: any) => {
+        if (res.error) { console.error("Error checking whether user has sm token for platform " +
+        socialMediaPlatform + ": " + res.error); }
+
+          return res.exists;
+      });
+  }
+
   async getSocialMediaOptionsForUser(socialMediaPlatform: string) {
     const userSocialMediaGetOptsUrl = 'http://localhost:3000/social/trello/boards';
     let opts = undefined;
@@ -63,7 +74,6 @@ export class AuthService {
       if (res.error) { console.error("Error attempting to retrieve trello boards: ", res.error); }
 
       else {
-        console.log("Returning ", res.boards);
         return res.boards;
       }
     });

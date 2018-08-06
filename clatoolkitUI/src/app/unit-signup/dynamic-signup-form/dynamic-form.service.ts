@@ -59,7 +59,7 @@ async getSignUpInputsFor(unit) {//: Observable<InputBase<any>[]> {
       	// Check to see if user has attached this platform
       	// if so, retreive options from backend
       	let options = undefined;
-      	if (this.authService.userHasSocialMediaTokenFor(platformName)) {
+      	if (await this.authService.asyncUserHasSocialMediaTokenFor(platformName)) {
       		options = await this.authService.getSocialMediaOptionsForUser(platformName);
       	}
 
