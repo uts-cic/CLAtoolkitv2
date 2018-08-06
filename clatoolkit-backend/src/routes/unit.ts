@@ -13,6 +13,7 @@ class Unit {
   private init() {
     this.router.post("/", Auth.JwtAuthorized, unitController.postUnit);
     this.router.get("/:id", Auth.JwtAuthorized, unitController.getUnitById);
+    this.router.post("/:id/register", Auth.JwtAuthorized, unitController.postSignUp);
     // this.router.get("/units", Auth.JwtAuthorized, userController.getUnits);
 
   }

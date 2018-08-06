@@ -28,6 +28,9 @@ export class DynamicSignupFormComponent implements OnInit {
   submitSignUpForm() {
   	// this.unitService.registerUserSignup(this.form.value);
   	console.log(JSON.stringify(this.form.value));
+  	this.unitService.registerUser(this.form.value);
   }
+
+
 
 }
