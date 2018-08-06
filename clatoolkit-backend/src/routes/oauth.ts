@@ -28,6 +28,7 @@ class Oauth {
 
       res.redirect(returnURL);
     });
+    this.router.get("/trello/boards", Auth.JwtAuthorized, apiController.getTrelloBoards);
   
 
   }

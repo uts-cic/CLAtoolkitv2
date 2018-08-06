@@ -32,3 +32,13 @@ export class TextInput extends InputBase<string> {
 		this.type = options['type'] || '';
 	}
 }
+
+export class DropDownInput extends InputBase<string> {
+	controlType = 'dropdownInput';
+	options: { key: string, value: string}[] = [];
+
+	constructor(options: {} = {}) {
+		super(options);
+		this.options = options['options'] || ['Add your ' + options['key'] + ' account'];
+	}
+}

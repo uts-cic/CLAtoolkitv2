@@ -1,15 +1,28 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http'; 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { InputBase } from './input-base';
+import { InputBase, TextInput, DropDownInput } from './input-base'; 
+
+import { Observable } from 'rxjs';
+
+import { AuthService } from '../../services/auth.service';
 
 @Injectable()
 export class DynamicFormService {
 
-  constructor(private http: HttpClient) { }
+	private socialMediaInputMap = {
+		'trello': 'dropdown',
+		'github': 'dropdown',
+		'slack': 'dropdown',
+		'twitter': 'text',
+	}
+
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   toFormGroup(inputs: InputBase<any>[]) {
   	let group: any = [];
+
+  	console.log('inputs ', inputs);
 
   	inputs.forEach(input => {
   		if (input.key == 'twitter') {
@@ -22,6 +35,46 @@ export class DynamicFormService {
   	});
 
   	return new FormGroup(group);
+  }
+
+async getSignUpInputsFor(unit) {//: Observable<InputBase<any>[]> {
+    let inputs: InputBase<any>[] = [];
+
+    let i = 0;
+    for (const unitRequiredPlatforms of unit.platforms) {
+      i++;
+      const platformName = unitRequiredPlatforms.platform; // twitter, slack, trello, etc
+
+      if (this.socialMediaInputMap[platformName] == 'text') {
+      	inputs.push(new TextInput({
+	        key: unitRequiredPlatforms.platform,
+        	label: unitRequiredPlatforms.platform,
+        	value: unitRequiredPlatforms.retrieval_param || '',
+        	required: true, // TODO: setup required vs not required in unit setup and save to unit model
+        	order: i
+      	}));
+      }
+
+      if (this.socialMediaInputMap[platformName] == 'dropdown') {
+      	// Check to see if user has attached this platform
+      	// if so, retreive options from backend
+      	let options = undefined;
+      	if (this.authService.userHasSocialMediaTokenFor(platformName)) {
+      		options = await this.authService.getSocialMediaOptionsForUser(platformName);
+      	}
+
+      	console.log("DROPDOWN OPTIONS: ", options);
+
+      	inputs.push(new DropDownInput({
+      		key: unitRequiredPlatforms.platform,
+      		label: unitRequiredPlatforms.platform,
+      		options: options,
+      		order: i
+      	}));
+      }
+    }
+
+    return inputs.sort((a,b) => a.order - b.order); 
   }
 
 

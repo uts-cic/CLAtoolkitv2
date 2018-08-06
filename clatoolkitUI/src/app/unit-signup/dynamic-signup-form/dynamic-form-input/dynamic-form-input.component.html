@@ -1,11 +1,22 @@
 <div [formGroup]="form">
-	<label [attr.for]="input.key">{{input.label}}</label>
+	<div [ngSwitch]="input.controlType">
+		<label [attr.for]="input.key">{{input.label}}</label>
 
-	<input [formControlName]="input.key"
+		<input *ngSwitchCase="'textInput'"
+		[formControlName]="input.key"
 		[id]="input.key" [type]="input.type">
-	<button *ngIf="!userHasTokenForPlatform" type="button" (click)="attachSocialMedia()">Attach your {{input.key}} account</button>
+		<button *ngIf="!userHasTokenForPlatform" type="button" (click)="attachSocialMedia()">Attach your {{input.key}} account</button>
 
-	<!-- Load social media options from backend (new component), e.g.: Trello boards, github repos, slack channels, etc -->
+		<!-- Load social media options from backend (new component), e.g.: Trello boards, github repos, slack channels, etc -->
+		<select *ngSwitchCase="'dropdownInput'"
+		[formControlName]="input.key">
+			<option disabled selected value *ngIf="input.options.length != 0">Select your trello board</option>
+			<option disabled selected value *ngIf="input.options.length == 0">Attach trello</option>
+			<option *ngFor="let opt of input.options" [value]="opt.key">
+				{{opt.value}}
+			</option>
+		</select>
 
+	</div>
 	<div class="errorMessage" *ngIf="!isValid">{{input.label}} is required</div>
 </div>

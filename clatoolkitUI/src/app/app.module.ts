@@ -19,6 +19,7 @@ import { AuthService } from './services/auth.service';
 import { UnitService } from './services/unit.service';
 import { UnitSetupService } from './services/unit-setup.service';
 import { AuthTokenInterceptor } from './interceptors/auth-token.interceptor';
+import { DynamicFormService } from './unit-signup/dynamic-signup-form/dynamic-form.service';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -57,6 +58,7 @@ import { DynamicFormInputComponent } from './unit-signup/dynamic-signup-form/dyn
     UnitSetupStep2Guard,
     UnitSetupStep3Guard,
     UnitSetupService,
+    DynamicFormService,
     // Interceptor Provider dec
     {
       provide: HTTP_INTERCEPTORS,
