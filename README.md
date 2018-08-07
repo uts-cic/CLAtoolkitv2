@@ -18,7 +18,7 @@ prior CLAToolkit. In this way, the Connected Learning toolkit is to become an xA
   - Adjust style to comply with Existing dashboard style
 - Complete CLAtoolkit-backend:
   - Implement endpoints to support front-end functionality (in progress)
-  - Implement social media api Authentication/Token Storage (in progress - working for Trello)
+  - ~~Implement social media api Authentication/Token Storage (in progress - working for Trello)~~
   - Implement configurable data scraping messaging to queue
 - Complete CLAtoolkit-importer:
   - Refine Codebase (upgrade xAPI output to comply with latest xAPI specification)
