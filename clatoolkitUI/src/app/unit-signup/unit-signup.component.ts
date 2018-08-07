@@ -29,8 +29,6 @@ export class UnitSignupComponent implements OnInit {
 
   		this.unit = res.unit;
 
-  		console.log("GOT UNITS: ", this.unit);
-
   		this.formService.getSignUpInputsFor(this.unit).then((inputs: InputBase<any>[]) => {
   			this.inputs = inputs;
   			this.loading = false;
