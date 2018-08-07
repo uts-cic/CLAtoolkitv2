@@ -1,10 +1,25 @@
 <div class="container">
-	<div class="row justify-content-center">
-		<!-- wizard icons to go here for UX -->
+	<div class="row justify-content-center mb-2">
+		<h4>Create New Unit</h4>
 	</div>
 	<div class="row justify-content-center">
-		<h4>Step 2: Which Social Media are Being Used?</h4>
-
+		<span class="text-center">
+			<i class="material-icons md-light" style="font-size: 36px; color: rgba(0, 0, 0, 0.26);">description</i>
+			<br/>
+			<small style="color: rgba(0, 0, 0, 0.26);">1. Unit Details</small>
+		</span>
+		<span class="text-center mx-5">
+			<i class="material-icons md-36" style="font-size: 36px;">supervisor_account</i>
+			<br/>
+			<small>2. Social Media</small>
+		</span>
+		<span class="text-center">
+			<i class="material-icons md-36" style="font-size: 36px; color: rgba(0, 0, 0, 0.26);">device_hub</i>
+			<br/>
+			<small style="color: rgba(0, 0, 0, 0.26);">3. LRS</small>
+		</span>
+	</div>
+	<div class="row justify-content-center">
 		<div class="col-10">
 			<form (submit)="submitUnitForm()">
 				<div class="form-group">
