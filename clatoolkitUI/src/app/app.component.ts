@@ -10,11 +10,15 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent {
   
+	email: string;
+
 	constructor(private authService: AuthService, private router: Router) {}
 
 	ngOnInit() {
-		if (!this.authService.isLoggedIn) {
+		if (!this.authService.isLoggedIn()) {
 			this.router.navigate(['/login']);
+		} else {
+			this.email = this.authService.getUser().email;
 		}
 	}
 

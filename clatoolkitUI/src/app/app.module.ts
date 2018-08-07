@@ -28,6 +28,7 @@ import { UnitSetupStep3Guard } from './guards/unit-setup-step3.guard';
 import { UnitSignupComponent } from './unit-signup/unit-signup.component';
 import { DynamicSignupFormComponent } from './unit-signup/dynamic-signup-form/dynamic-signup-form.component';
 import { DynamicFormInputComponent } from './unit-signup/dynamic-signup-form/dynamic-form-input/dynamic-form-input.component';
+import { UnitsListComponent } from './home/units-list/units-list.component';
 
 
 
@@ -43,6 +44,7 @@ import { DynamicFormInputComponent } from './unit-signup/dynamic-signup-form/dyn
     UnitSignupComponent,
     DynamicSignupFormComponent,
     DynamicFormInputComponent,
+    UnitsListComponent,
   ],
   imports: [
   	Router,

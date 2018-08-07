@@ -51,7 +51,9 @@
     "nodemailer": "^2.6.4",
     "passport": "0.3.2",
     "passport-facebook": "^2.1.1",
+    "passport-github2": "^0.1.11",
     "passport-local": "^1.0.0",
+    "passport-slack": "0.0.7",
     "passport-trello": "^0.1.5",
     "pug": "^2.0.0-beta11",
     "request": "^2.78.0"

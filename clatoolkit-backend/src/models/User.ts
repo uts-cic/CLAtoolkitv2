@@ -8,11 +8,11 @@ export type UserModel = mongoose.Document & {
   passwordResetToken: string,
   passwordResetExpires: Date,
 
-  facebook: string,
   tokens: AuthToken[],
 
   profile: {
     name: string,
+    socialMediaUserIds: { [key: string]: string }
   },
 
   comparePassword: (candidatePassword: string, cb: (err: any, isMatch: any) => {}) => void
@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
 
   profile: {
     name: String,
+    socialMediaUserIds: Object
   },
 
   tokens: Array,
