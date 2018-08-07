@@ -10,11 +10,15 @@ import { default as User, AuthToken } from "../models/User";
 
 // Strategy Imports
 import * as passportTrello from "passport-trello";
+import * as passportSlack from "passport-slack";
+import * as passportGithub from "passport-github2";
 
 
 const LocalStrategy = passportLocal.Strategy;
 const FacebookStrategy = passportFacebook.Strategy;
 const TrelloStrategy = passportTrello.Strategy;
+const SlackStrategy = passportSlack.Strategy;
+const GithubStrategy = passportGithub.Strategy;
 
 passport.serializeUser<any, any>((user, done) => {
   done(undefined, user.id);
@@ -26,6 +30,8 @@ passport.deserializeUser((id, done) => {
   });
 });
 
+
+// TODO: SAVE USER SOCIAL MEDIA ID TO USER PROFILE (complete - line 55)
 const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: any, profile: any, done: any, req: any) => {
     // All Passport social login libraries MUST return request to match users to social media tokens
     // A user MUST also exist in the toolkit in order to match users with their social tokens
@@ -33,8 +39,6 @@ const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: an
     // But this is beyond the scope of the project at the moment.
 
   // Social signup, user saved to session
-  console.log("processSocial: req.session: ", req.session);
-
   const userParam = req.session.user.email;
   delete req.session.user;
 
@@ -48,11 +52,11 @@ const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: an
          platform: provider
        };
 
-       console.log("TOKEN: ", token);
+       // Add Social Media profile id to user account
+       existingUser.profile.socialMediaUserIds[<string>provider] = profile.id;
 
+       // Add Users social media auth token to list of auth tokens on user account
        existingUser.tokens = existingUser.tokens.concat([token]);
-
-       console.log("processSocia: existingUser: ", existingUser);
 
        existingUser.save((err: Error) => {
          if (err) { done(err); }
@@ -146,11 +150,13 @@ passport.use(new FacebookStrategy({
 
 /**
  * Trello Sign In
+ * Retrieves and saves trello credentials for a user, for clatoolkit data scraping later via importers
+ * (user access token)
  */
-if (process.env.TRELLO_ID && process.env.TRELLO_SECRET) {
+if (process.env.TRELLO_APP_ID && process.env.TRELLO_APP_SECRET) {
   passport.use(new TrelloStrategy({
-    consumerKey: process.env.TRELLO_ID,
-    consumerSecret: process.env.TRELLO_SECRET,
+    consumerKey: process.env.TRELLO_APP_ID,
+    consumerSecret: process.env.TRELLO_APP_SECRET,
     callbackURL: "/social/trello/callback",
     passReqToCallback: true,
     trelloParams: {
@@ -159,6 +165,40 @@ if (process.env.TRELLO_ID && process.env.TRELLO_SECRET) {
       expiration: "never"
     }}, (req: any, token: any, tokenSecret: any, profile: any, cb: any) => {
       processSocial("trello", token, tokenSecret, profile, cb, req);
+  }));
+}
+
+/**
+ * Slack Sign In
+ * Retrieves and saves slack credentials for user, for clatoolkit data scraping later
+ */
+if (process.env.SLACK_APP_ID && process.env.SLACK_APP_SECRET) {
+  passport.use(new SlackStrategy({
+    clientID: process.env.SLACK_APP_ID,
+    clientSecret: process.env.SLACK_APP_SECRET,
+    callbackURL: "/social/slack/callback",
+    passReqToCallback: true,
+    skipUserProfile: false,
+    scope: ["channels:read", "channels:history", "files:read", "dnd:read", "groups:read", "groups:history",
+             "im:history", "im:read", "pins:read", "reactions:read", "reminders:read", "search:read",
+             "team:read", "stars:read", "usergroups:read", "users.profile:read", "users:read"]
+  }, (req: any, accessToken: any, refreshToken: any, profile: any, cb: any) => {
+    processSocial("slack", accessToken, refreshToken, profile, cb, req);
+  }));
+}
+
+/**
+ * Github Sign In
+ * Retrieves and saves github credentials for user, for clatoolkit data scraping later
+ */
+if (process.env.GITHUB_APP_ID && process.env.GITHUB_APP_SECRET) {
+  passport.use(new GithubStrategy({
+    clientID: process.env.GITHUB_APP_ID,
+    clientSecret: process.env.GITHUB_APP_SECRET,
+    callbackURL: "/social/github/callback",
+    passReqToCallback: true,
+  }, (req: any, accessToken: any, refreshToken: any, profile: any, cb: any) => {
+    processSocial("github", accessToken, refreshToken, profile, cb, req);
   }));
 }
 

@@ -170,7 +170,7 @@ export let postSignUp = async (req: Request, res: Response) => {
 
 				return res.status(200).json({success: true});
 			});
-		})
+		});
 
 		// unit.attached_user_platforms = unit.attached_user_platforms.concat(savedUserPlatformIds);
 	});
