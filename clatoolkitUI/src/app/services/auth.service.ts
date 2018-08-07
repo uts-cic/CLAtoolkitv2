@@ -67,14 +67,14 @@ export class AuthService {
   }
 
   async getSocialMediaOptionsForUser(socialMediaPlatform: string) {
-    const userSocialMediaGetOptsUrl = 'http://localhost:3000/social/trello/boards';
+    const userSocialMediaGetOptsUrl = 'http://localhost:3000/social/' + socialMediaPlatform + '/opts';
     let opts = undefined;
     return this.http.get(userSocialMediaGetOptsUrl).toPromise().then((res: any) => {
       // List of trello boards and ids
       if (res.error) { console.error("Error attempting to retrieve trello boards: ", res.error); }
 
       else {
-        return res.boards;
+        return res.opts;
       }
     });
 

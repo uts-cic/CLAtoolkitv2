@@ -53,6 +53,10 @@ const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: an
        };
 
        // Add Social Media profile id to user account
+       console.log("existingUser.profile.socialMediaUserIds: ", existingUser.profile.socialMediaUserIds);
+       if (existingUser.profile.socialMediaUserIds == undefined) {
+         existingUser.profile.socialMediaUserIds = {};
+       }
        existingUser.profile.socialMediaUserIds[<string>provider] = profile.id;
 
        // Add Users social media auth token to list of auth tokens on user account
