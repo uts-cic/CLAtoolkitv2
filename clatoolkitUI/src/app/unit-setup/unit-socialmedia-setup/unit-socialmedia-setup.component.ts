@@ -15,9 +15,18 @@ export class UnitSocialmediaSetupComponent implements OnInit {
 
 	unitFormModelStep2 = {
 		twitter: '', // string: hashtag
-		trello: false, // Boolean
-		github: false, // Boolean
-		slack: false // Boolean
+		trello: {
+      selected: false,
+      required: false
+    },
+		github: {
+      selected: false,
+      required: false
+    },
+		slack: {
+      selected: false,
+      required: false
+    }
 	}
 
   constructor(private unitSetupService: UnitSetupService, private router: Router) { }

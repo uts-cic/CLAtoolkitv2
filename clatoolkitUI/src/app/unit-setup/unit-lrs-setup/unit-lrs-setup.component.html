@@ -25,13 +25,13 @@
 		<div class="col-10">
 			<form (submit)="submitAndCompleteUnitForm()">
 				<div class="form-group">
-					<input type="radio" id="unit-default-lrs" name="unit-default-lrs" (click)="useDefaultLRS()" />
+					<input type="radio" id="unit-default-lrs" name="unit-default-lrs" [checked]="defaultLRS" (click)="setProperty($event.target.checked)" />
 					<label id="label-unit-default-lrs" for="unit-default-lrs">
 						Use CLtoolkit LRS
 					</label>
 				</div>
 				<div class="form-group">
-					<input type="radio" disabled id="unit-custom-lrs" name="unit-custom-lrs" (click)="useCustomLRS()" />
+					<input type="radio" [checked]="!defaultLRS" (click)="setProperty(!$event.target.checked)" id="unit-custom-lrs" name="unit-custom-lrs"  />
 					<label id="label-unit-custom-lrs" for="unit-custom-lrs">
 						Use your own LRS
 					</label>
@@ -45,6 +45,28 @@
 					<h5>Authentication Setup</h5>
 				</div>-->
 				</div>
+
+				<div class="form-group" *ngIf="defaultLRS == false">
+					<label for="custom-lrs-list">Your Learning Record Stores</label>
+
+					<span *ngIf="customLRSDetails.length == 0">
+						Add your own LRS
+					</span>
+
+					<select *ngIf="customLRSDetails.length != 0" [(ngModel)]="customLRSChoice" name="lrs-choice" >
+						<option *ngFor="let opt of customLRSDetails" [value]="opt.name">
+							{{opt.name}}({{opt.endpoint}})
+						</option>
+					</select>
+
+					<button type="button" class="btn btn-sm btn-secondary" (click)="newCustomLrs()">
+						Add Custom LRS
+					</button>
+				</div>
+				<div class="form-group" *ngIf="showNewCustomLRSForm == true">
+					<app-custom-lrs-form (added)="handleNewLRS($event)"></app-custom-lrs-form>
+				</div>
+
 				<button type="submit" class="btn btn-sm btn-secondary">Complete Unit Setup</button>
 			</form>
 		</div>
