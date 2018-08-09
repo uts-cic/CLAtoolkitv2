@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { UnitSetupService } from '../../services/unit-setup.service';
+import { LrsModel } from '../../models/LrsModel';
 
 @Component({
   selector: 'app-unit-lrs-setup',
@@ -11,7 +12,12 @@ import { UnitSetupService } from '../../services/unit-setup.service';
 export class UnitLrsSetupComponent implements OnInit {
 
 	defaultLRS: boolean = true;
-	customLRS: boolean = false;
+	// customLRS: boolean = false;
+	defaultLRSDetails: object;
+	customLRSDetails: Array<object> = [];
+
+	useCustomLRS: boolean = false;
+	showNewCustomLRSForm: boolean = false;
 
 	/*
 		 Biggest issue here is that the way LRS's handle authentication differs
@@ -26,30 +32,52 @@ export class UnitLrsSetupComponent implements OnInit {
 		 For now, for the MVP, we will use the Default CLToolkit LRS.
 	*/
 
-	/*
-	customLRSFormModel = {
-		endpoint: undefined,
-		auth: {
-			authType: undefined
-			// Add auth here
-		}
-	}
-	*/
+	lrsModel: LrsModel;
 
-	/*
-	customLRSBasicAuth {
-		username: undefined,
-		password: undefined
-	}
-	*/
+	customLRSChoice: string;
 
   constructor(private unitSetupService: UnitSetupService, private router: Router) { }
 
   ngOnInit() {
+	  this.unitSetupService.getLearningRecordStores().subscribe((res: any) => {
+  		if (res.error) { console.error("Error grabbing LRS's from backend: ", res.error); }
+
+  		this.customLRSDetails = res.customLRS;
+  		this.defaultLRSDetails = res.defaultLRS;
+  	});
+  }
+
+  setProperty(checked: boolean) {
+  	this.defaultLRS = checked;
   }
 
   submitUnitForm() {
-  	(this.defaultLRS == true) ? this.unitSetupService.addUnitLRS({default: true}) : false; // TODO: add custom lrs model once this functionality is added.
+  	//(this.defaultLRS == true) ? this.unitSetupService.addUnitLRS({default: true}) : false; // TODO: add custom lrs model once this functionality is added.
+  	console.log("defaultLRS: ", this.defaultLRS);
+  	if (this.defaultLRS) {
+  		console.log("using default lrs");
+ 		this.unitSetupService.addUnitLRS({default: true});
+  	} else if (!this.defaultLRS) {
+  		console.log("using custom lrs:");
+  		const lrs = this.customLRSDetails.find((lrs: any) => lrs.name == this.customLRSChoice);
+  		console.log(lrs);
+  		this.unitSetupService.addUnitLRS({ default: false, lrs: lrs});
+  	}
+
+  }
+
+  toggleCustomLrsPane() {
+  	this.useCustomLRS = !this.useCustomLRS;
+  }
+
+  newCustomLrs() {
+  	this.showNewCustomLRSForm = !this.showNewCustomLRSForm;
+  	console.log("Custom lrs toggle: ", this.showNewCustomLRSForm);
+  }
+
+  handleNewLRS(newLRS: LrsModel) {
+  	this.customLRSDetails.unshift(newLRS);
+  	this.showNewCustomLRSForm = !this.showNewCustomLRSForm;
   }
 
   submitAndCompleteUnitForm() {

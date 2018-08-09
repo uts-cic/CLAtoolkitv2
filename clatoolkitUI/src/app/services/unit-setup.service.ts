@@ -16,6 +16,11 @@ export class UnitSetupService {
   	this.unitData.unit = unitSetupForm;
   }
 
+  getLearningRecordStores() {
+    const getLRSDetailsEndpoint: string = 'http://localhost:3000/lrs/';
+    return this.http.get(getLRSDetailsEndpoint)
+  }
+
   addSocialMediaDetails(unitSocialMediaForm) {
   	this.unitData.social_media = unitSocialMediaForm;
   }

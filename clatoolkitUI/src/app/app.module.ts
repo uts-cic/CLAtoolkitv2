@@ -29,6 +29,7 @@ import { UnitSignupComponent } from './unit-signup/unit-signup.component';
 import { DynamicSignupFormComponent } from './unit-signup/dynamic-signup-form/dynamic-signup-form.component';
 import { DynamicFormInputComponent } from './unit-signup/dynamic-signup-form/dynamic-form-input/dynamic-form-input.component';
 import { UnitsListComponent } from './home/units-list/units-list.component';
+import { CustomLrsFormComponent } from './unit-setup/unit-lrs-setup/custom-lrs-form/custom-lrs-form.component';
 
 
 
@@ -45,6 +46,7 @@ import { UnitsListComponent } from './home/units-list/units-list.component';
     DynamicSignupFormComponent,
     DynamicFormInputComponent,
     UnitsListComponent,
+    CustomLrsFormComponent,
   ],
   imports: [
   	Router,
