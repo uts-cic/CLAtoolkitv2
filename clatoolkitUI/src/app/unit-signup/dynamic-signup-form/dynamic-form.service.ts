@@ -26,6 +26,18 @@ export class DynamicFormService {
 
   	inputs.forEach(input => {
   		if (input.key == 'twitter') {
+
+        if (input.value.split(",").length > 1) {
+          const inputsAsHashtag = [];
+          input.value.split(",").forEach((hashtag) => {
+            inputsAsHashtag.push("#"+hashtag);
+          });
+
+          input.value = inputsAsHashtag.join(",");
+        } else {
+          input.value = "#" + input.value;
+        }
+
   			group[input.key] = new FormControl({ value: input.value || '', disabled: true});
   		} else {
   			group[input.key] = input.required ? new FormControl(input.value || '', Validators.required) :
@@ -50,7 +62,7 @@ async getSignUpInputsFor(unit) {//: Observable<InputBase<any>[]> {
 	        key: unitRequiredPlatforms.platform,
         	label: unitRequiredPlatforms.platform,
         	value: unitRequiredPlatforms.retrieval_param || '',
-        	required: true, // TODO: setup required vs not required in unit setup and save to unit model
+        	required: false, // TODO: setup required vs not required in unit setup and save to unit model
         	order: i
       	}));
       }
@@ -69,6 +81,7 @@ async getSignUpInputsFor(unit) {//: Observable<InputBase<any>[]> {
       		key: unitRequiredPlatforms.platform,
       		label: unitRequiredPlatforms.platform,
       		options: options,
+          required: unit.requiredPlatforms.required,
       		order: i
       	}));
       }
