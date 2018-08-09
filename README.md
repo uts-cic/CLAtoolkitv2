@@ -1,11 +1,11 @@
 # Connected Learning Toolkit V2
 
-*NOTE*: This is not complete and in Active development. Install instructions and further information to come in the following weeks.
+*NOTE*: This codebase is not complete and in Active development. Install instructions and further information to come in the following weeks.
 
 Connected Learning Analytics - new architecture version 2
 
 This version of the toolkit decouples class/course/unit setup, social media scraping, and xAPI statement creation from dashboards and analytics functionality of the
-prior CLAToolkit. In this way, the Connected Learning toolkit is to become an xAPI Activity provider, where analytics can be created seperately utilising other tool sets.
+prior CLAToolkit. In this way, the Connected Learning toolkit is to become a genuine xAPI Learning Record Provider (LRP), where analytics can be created seperately utilising other tool sets.
 
 # Road Map
 - Complete CLAToolkit UI:
