@@ -30,13 +30,31 @@
 				</div>
 
 				<div class="form-group">
-					<input type="checkbox" name="trello" [(ngModel)]="unitFormModelStep2.trello" />
+					<input type="checkbox" name="trello" [(ngModel)]="unitFormModelStep2.trello.selected" />
 					<label for="trello">Trello</label>
+
+					<input type="checkbox" name="trello-required"
+					[(ngModel)]="unitFormModelStep2.trello.required" />
+					<label for="trello-required">Require users to register a trello board</label>
 				</div>
 
 				<div class="form-group">
-					<input type="checkbox" name="slack" [(ngModel)]="unitFormModelStep2.slack" />
+					<input type="checkbox" name="slack" [(ngModel)]="unitFormModelStep2.slack.selected" />
 					<label for="slack">Slack</label>
+
+					<input type="checkbox" name="slack-required"
+					[(ngModel)]="unitFormModelStep2.slack.required" />
+					<label for="slack-required">Require users to register slack channel(s)</label>
+				</div>
+
+				<div class="form-group">
+					<input type="checkbox" name="github"
+					[(ngModel)]="unitFormModelStep2.github.selected" />
+					<label for="github">Github</label>
+
+					<input type="checkbox" name="github-required"
+					[(ngModel)]="unitFormModelStep2.github.required" />
+					<label for="github-required">Require users to register a git repo</label>
 				</div>
 
 				<button type="submit" class="btn btn-sm btn-secondary">

@@ -9,23 +9,26 @@ import { AuthToken, default as User, UserModel } from "../models/User";
 
 import { default as Unit, UnitModel, UnitPlatform } from "../models/Unit";
 import { default as UnitUserPlatform, UnitUserPlatformModel } from "../models/UnitUserPlatform";
+import { default as Lrs, LrsModel, CreateLrsFromData } from "../models/LearningRecordStore";
 
 
 const getDbUser = async (usrEmail: string) => {
   return User.findOne({ email: usrEmail }).exec();
 };
 
-const createUnitFromData = (user: any, unit: any, social_media: any, lrs: any) => {
-	const unitPlatforms = [];
+const createUnitFromData = async (user: any, unit: any, social_media: any, lrs: any) => {
+	const unitPlatforms: any = [];
 
 	// Build unit platforms for unitmodel
 	for (const mediaKey in social_media) {
-		if (social_media[mediaKey] != false) {
+		if (social_media[mediaKey].selected != false) {
 			const unit_platform: UnitPlatform = {
-				platform: mediaKey
+				platform: mediaKey,
+				required: social_media[mediaKey].required
 			};
 
 			// Twitter hashtag/Facebook group id/Youtube Channel id, etc
+			// This is instead of { selected: boolean, required: boolean }
 			if (typeof social_media[mediaKey] == "string") {
 				unit_platform["retrieval_param"] = social_media[mediaKey];
 			}
@@ -34,14 +37,25 @@ const createUnitFromData = (user: any, unit: any, social_media: any, lrs: any) =
 		}
 	}
 
+	let lrsId;
 	// Check LRS 
-	if ("default" in lrs) {
-		// get lrs id from DB (need to setup models)
-		// for now.. a placeholder
-		lrs = "5b5e9879ec90179bb2a70a15";
-	} else {
-		// Custom lrs..
-		// create and insert into db, get id
+	if (lrs.default) {
+		await Lrs.findOne({ type: "default" }, (err, defaultLrs) => {
+			if (err) { console.error("Create UNIT: Error attempting to find default LRS: ", err); }
+
+			// lrs = defaultLrs._id;
+			lrsId = defaultLrs._id;
+
+		});
+	} else if (!lrs.default) {
+		const lrsData = CreateLrsFromData(lrs.lrs, user._id);
+
+		await Lrs.create(lrsData, (err: any, savedLrs: LrsModel) => {
+			if (err) { console.error("Create UNIT: Error saving user defined custom lrs: ", err); }
+			// lrs = savedLrs._id;
+
+			lrsId = savedLrs._id;
+		});
 	}
 
 	return new Unit({
@@ -61,7 +75,7 @@ const createUnitFromData = (user: any, unit: any, social_media: any, lrs: any) =
 
 		attached_user_platforms: [],
 
-		lrs: lrs,
+		lrs: lrsId,
 
 		created_by: user._id
 	});
@@ -92,13 +106,15 @@ export let postUnit = async (req: Request, res: Response) => {
 	const lrs = req.body.lrs;
 
 	// Check to see if a unit of the same name exists already before anything
-	Unit.find({ name: unit.name }, (err, alreadyExists) => {
+	Unit.find({ name: unit.name }, async (err, alreadyExists) => {
 		if (alreadyExists.length > 0) {
 			console.log("ALREADY EXISTS: ", alreadyExists);
 			return res.status(400).json({ error: "Unit titled: " + unit.name + " already exists."});
 		}
 
-		const unitObj = createUnitFromData(user, unit, social_media, lrs);
+		const unitObj = await createUnitFromData(user, unit, social_media, lrs);
+
+		console.log("unitObj: ", unitObj);
 
 		Unit.create(unitObj, (err: any, unit: any) => {
 			if (err) { return res.status(400).json({ error: err }); }

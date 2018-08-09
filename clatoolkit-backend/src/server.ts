@@ -16,6 +16,8 @@ import * as passport from "passport";
 import * as path from "path";
 import expressValidator = require("express-validator");
 
+import { default as LRS, LrsModel } from "./models/LearningRecordStore";
+
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
@@ -29,6 +31,7 @@ import apiRouter from "./routes/api";
 import oauthRouter from "./routes/oauth";
 import authRouter from "./routes/auth";
 import unitRouter from "./routes/unit";
+import lrsRouter from "./routes/lrs";
 
 
 /**
@@ -104,6 +107,7 @@ class App {
     this.express.use("/api", apiRouter);
     this.express.use("/social", oauthRouter);
     this.express.use("/account", accountRouter);
+    this.express.use("/lrs", lrsRouter);
   }
 
   private launchConf() {
@@ -114,6 +118,51 @@ class App {
       // tslint:disable-next-line:no-console
       console.log("MongoDB connection error. Please make sure MongoDB is running.");
       process.exit();
+    });
+
+    // Add default LRS on startup if it doesnt exist
+    mongoose.connection.once("open", () => {
+      LRS.findOne({ type: "default" }, (err, defaultLrs) => {
+        if (err) { console.error("SERVER STARTUP: Error looking for default lrs: ", err); }
+        if (!defaultLrs) {
+          const lrsType = process.env.DEFAULT_LRS_AUTH_TYPE;
+          let token;
+          const configObj = {
+            basic_auth: {
+              key: <any>undefined,
+              secret: <any>undefined,
+              enabled: false
+            },
+            token: {
+              enabled: false
+            }
+          };
+
+          if (lrsType == "basic") {
+            configObj.basic_auth.key = process.env.DEFAULT_LRS_AUTH_USERNAME;
+            configObj.basic_auth.secret = process.env.DEFAULT_LRS_AUTH_SECRET;
+            configObj.basic_auth.enabled = true;
+            token =  Buffer.from(process.env.DEFAULT_LRS_AUTH_USERNAME + ":" + process.env.DEFAULT_LRS_AUTH_SECRET).toString("base64");
+          } else if (lrsType == "token") {
+            configObj.token.enabled = true;
+            token = process.env.DEFAULT_LRS_AUTH_SECRET;
+          }
+            
+
+          const defaultLrs = {
+            name: "CLAtoolkit Default LRS",
+            token: token,
+            host: process.env.DEFAULT_LRS_XAPI_URL,
+            config: configObj,
+            belongsTo: <any>undefined,
+            type: "default"
+          };
+
+          LRS.create(defaultLrs, (err: any, result: any) => {
+            if (err) { console.error("SERVER STARTUP: Error creating default lrs: ", err ); }
+          });
+        }
+      });
     });
 
     this.express.use(errorHandler());

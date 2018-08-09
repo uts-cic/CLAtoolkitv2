@@ -21,7 +21,8 @@ export type UnitModel = mongoose.Document & {
 // tslint:disable-next-line:interface-name
 export interface UnitPlatform {
 	platform: string;
-	[key: string]: string;
+	required: boolean;
+	[key: string]: string | boolean;
 }
 
 export interface UserUnitPlatform {
@@ -44,7 +45,8 @@ const unitSchema = new mongoose.Schema({
 	platforms: Array,
 	attached_user_platforms: Array,
 
-	created_by: String 
+	created_by: String,
+	lrs: String
 
 
 }, { timestamps: true });
