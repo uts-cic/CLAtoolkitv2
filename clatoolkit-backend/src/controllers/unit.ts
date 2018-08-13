@@ -48,17 +48,21 @@ const createUnitFromData = async (user: any, unit: any, social_media: any, lrs: 
 
 		});
 	} else if (!lrs.default) {
-		const lrsData = CreateLrsFromData(lrs.lrs, user._id);
+		if (lrs.lrs.id != undefined) {
+			lrsId = lrs.lrs.id;
+		} else {
+			const lrsData = CreateLrsFromData(lrs.lrs, user._id);
 
-		await Lrs.create(lrsData, (err: any, savedLrs: LrsModel) => {
-			if (err) { console.error("Create UNIT: Error saving user defined custom lrs: ", err); }
-			// lrs = savedLrs._id;
+			await Lrs.create(lrsData, (err: any, savedLrs: LrsModel) => {
+				if (err) { console.error("Create UNIT: Error saving user defined custom lrs: ", err); }
+				// lrs = savedLrs._id;
 
-			lrsId = savedLrs._id;
-		});
+				lrsId = savedLrs._id;
+			});
+		}
 	}
 
-	return new Unit({
+	return {
 		name: unit.name,
 		code: unit.code,
 		semester: unit.semester,
@@ -68,17 +72,17 @@ const createUnitFromData = async (user: any, unit: any, social_media: any, lrs: 
 		start_date: unit.startDate,
 		end_date: unit.endDate,
 
-		users: [],
+		// users: [],
 		enabled: true,
 
 		platforms: unitPlatforms,
 
-		attached_user_platforms: [],
+		// attached_user_platforms: [],
 
 		lrs: lrsId,
 
 		created_by: user._id
-	});
+	};
 };
 
 /**
@@ -92,6 +96,32 @@ export let getUnitById = async (req: Request, res: Response) => {
 		if (err) { return res.status(400).json({ error: err }); }
 
 		return res.status(200).json({ unit: unit });
+	});
+};
+
+/**
+ * POST Update Unit
+ * Endpoint to update unit 
+ */
+
+ // THIS IS PROBABLY INEFFICIENT AND NEEDS REFACTORING
+export let updateUnit = async (req: Request, res: Response) => {
+	const user = await getDbUser(req.user.email);
+	const unit = req.body.unit;
+	const social_media = req.body.social_media;
+	const lrs = req.body.lrs;
+
+	Unit.findById(req.body.id, async (err: any, unitDoc: any) => {
+		if (user._id == unitDoc.created_by) {
+			const unitObj = await createUnitFromData(user, unit, social_media, lrs);
+
+			// unitDoc.set(unitObj);
+			Unit.findByIdAndUpdate(req.body.id, { $set: unitObj }, (err: any, updatedUnit: any) => {
+				if (err) { return res.status(400).json({ error: err }); }
+				
+				return res.status(200).json({ success: true });
+			});
+		}
 	});
 };
 

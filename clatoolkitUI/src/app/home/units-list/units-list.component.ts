@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-units-list',
@@ -10,7 +11,7 @@ export class UnitsListComponent implements OnInit {
 	@Input() unit;
 	showRegistrationLink: boolean = false;
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
@@ -22,6 +23,10 @@ export class UnitsListComponent implements OnInit {
   getRegistrationLink(unitId: string): string {
   	const url = 'http://localhost:4200/unit-signup/' + unitId;
   	return url;
+  }
+
+  editUnit(): void {
+    this.router.navigate(['/edit/' + this.unit._id]);
   }
 
 

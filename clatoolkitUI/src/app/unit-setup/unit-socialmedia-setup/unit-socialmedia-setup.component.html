@@ -23,7 +23,7 @@
 		<div class="col-10">
 			<form (submit)="submitUnitForm()">
 				<div class="form-group">
-					<input type="checkbox" name="twitter" (click)="toggleHashtagField()">
+					<input type="checkbox" name="twitter" [checked]="twitterEnabled" (click)="toggleHashtagField()">
 					<label for="twitter">Twitter</label>
 
 					<input type="text" name="twitter-hashtag" [(ngModel)]="unitFormModelStep2.twitter" *ngIf="twitterEnabled == true" placeholder="Twitter Hashtags (comma separated)" />

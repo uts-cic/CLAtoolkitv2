@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { UnitSetupService } from '../../services/unit-setup.service';
 
 @Component({
@@ -21,9 +21,14 @@ export class UnitSetupComponent implements OnInit {
 		ethicsStatement: ''
 	};
 
-  constructor(private unitSetupService: UnitSetupService, private router: Router) { }
+  constructor(private unitSetupService: UnitSetupService, private router: Router,
+    private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
+    const previouslySavedDetails = this.unitSetupService.getStepDetails().unit;
+    if (previouslySavedDetails != undefined) {
+      this.unitFormModelStep1 = previouslySavedDetails;
+    }
   }
 
   submitUnitForm() {
@@ -31,7 +36,8 @@ export class UnitSetupComponent implements OnInit {
   	// this.validateUnitForm(); TODO: Later if need be (getting MVP working)
 
   	this.unitSetupService.addUnitDetails(this.unitFormModelStep1);
-  	this.router.navigate(['new/social-setup']);
+  	
+    this.router.navigate(['unit/social-setup']);
   }
 
 }
