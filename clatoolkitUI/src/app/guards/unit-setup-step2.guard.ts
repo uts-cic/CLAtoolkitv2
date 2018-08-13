@@ -17,7 +17,7 @@ export class UnitSetupStep2Guard implements CanActivate {
   	if (this.unitSetupService.unitData.unit != undefined) {
   		return true;
   	} else {
-  		this.router.navigate(['new/unit-setup']);
+  		this.router.navigate(['unit/unit-setup']);
   		return false;
   	}
 

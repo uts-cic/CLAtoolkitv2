@@ -16,7 +16,7 @@ export class UnitSetupStep3Guard implements CanActivate {
   	if (this.unitSetupService.unitData.social_media != undefined) {
   		return true;
   	} else {
-  		this.router.navigate(["new/unit-setup"]);
+  		this.router.navigate(["unit/unit-setup"]);
   		return false;
   	}
 

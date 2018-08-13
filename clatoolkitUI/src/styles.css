@@ -1,2 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @import '~material-design-icons/iconfont/material-icons.css';
+
+a[noLink] {
+	cursor: pointer;
+}
+
+.material-icons.md-24 { font-size: 24px; }

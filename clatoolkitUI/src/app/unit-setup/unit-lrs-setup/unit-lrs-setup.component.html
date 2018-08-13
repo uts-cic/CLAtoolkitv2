@@ -24,6 +24,7 @@
 		<h4 style="display: block;">Step 3: LRS Setup <small><a href="#">What is this?</a></small></h4>
 		<div class="col-10">
 			<form (submit)="submitAndCompleteUnitForm()">
+
 				<div class="form-group">
 					<input type="radio" id="unit-default-lrs" name="unit-default-lrs" [checked]="defaultLRS" (click)="setProperty($event.target.checked)" />
 					<label id="label-unit-default-lrs" for="unit-default-lrs">
@@ -54,13 +55,14 @@
 					</span>
 
 					<select *ngIf="customLRSDetails.length != 0" [(ngModel)]="customLRSChoice" name="lrs-choice" >
+						<option disabled hidden [value]="undefined">-- Select an LRS --</option>
 						<option *ngFor="let opt of customLRSDetails" [value]="opt.name">
 							{{opt.name}}({{opt.endpoint}})
 						</option>
 					</select>
 
 					<button type="button" class="btn btn-sm btn-secondary" (click)="newCustomLrs()">
-						Add Custom LRS
+						Add New Custom LRS
 					</button>
 				</div>
 				<div class="form-group" *ngIf="showNewCustomLRSForm == true">

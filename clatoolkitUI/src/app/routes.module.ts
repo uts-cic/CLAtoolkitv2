@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { UnitSetupStep2Guard } from './guards/unit-setup-step2.guard';
 import { UnitSetupStep3Guard } from './guards/unit-setup-step3.guard';
+import { IsUnitOwnerGuard } from './guards/isunitowner.guard';
 
 // Component Imports
 import { AppComponent } from './app.component';
@@ -28,19 +29,24 @@ const routes: Routes = [
 	  canActivate: [AuthGuard]
 	},
 	{
-		path: 'new/unit-setup',
+		path: 'unit/unit-setup',
 		component: UnitSetupComponent,
 		canActivate: [AuthGuard]
 	},
 	{
-		path: 'new/social-setup',
+		path: 'unit/social-setup',
 		component: UnitSocialmediaSetupComponent,
 		canActivate: [AuthGuard, UnitSetupStep2Guard]
 	},
 	{
-		path: 'new/data-setup',
+		path: 'unit/data-setup',
 		component: UnitLrsSetupComponent,
 		canActivate: [AuthGuard, UnitSetupStep3Guard]
+	},
+	{
+		path: 'edit/:id',
+		component: UnitSetupComponent,
+		canActivate: [AuthGuard, IsUnitOwnerGuard]
 	}
 ];
 

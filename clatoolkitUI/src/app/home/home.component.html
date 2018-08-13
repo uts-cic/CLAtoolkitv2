@@ -1,20 +1,29 @@
 <div class="container">
 	<div class="row justify-content-center">
 		<div class="col-6">
-			<p *ngIf="units.length == 0">There's no units here, create one by clicking the button below or by receiving an invite to another unit.</p>
-			
-			<ul class="list-group">
-				<div *ngFor="let unit of units">
-					<app-units-list [unit]=unit></app-units-list>
+			<div class="card">
+				<div class="card-header">
+					My Units
 				</div>
-			</ul>
+				<div class="card-body">
+					<div *ngIf="loadingUnits == true">
+						Retrieving Units...
+					</div>
+					<div *ngIf="units.length == 0 && loadingUnits == false" class="alert alert-warning">There's no units here, create one by clicking the button below or by receiving an invite to another unit.</div>
 
-			<!--<ul *ngIf="units.length > 0">
+					<ul class="list-group list-group-flush">
+						<div *ngFor="let unit of units">
+							<app-units-list [unit]=unit></app-units-list>
+						</div>
+					</ul>
+				</div>
+			</div>
+			<!--<ul *nIf="units.length > 0">
 				<li *ngFor="let unit of units">{{unit.name}}</li>
 			</ul>-->	
 		</div>
 	</div>
-	<div class="row">
+	<div class="row justify-content-center mt-2">
 		<button class="btn btn-sm btn-secondary pull-left" (click)="setupNewUnit()">Create a Unit</button>
 	</div>
 </div>

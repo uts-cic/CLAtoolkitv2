@@ -13,8 +13,8 @@ export class UnitLrsSetupComponent implements OnInit {
 
 	defaultLRS: boolean = true;
 	// customLRS: boolean = false;
-	defaultLRSDetails: object;
-	customLRSDetails: Array<object> = [];
+	defaultLRSDetails: any;
+	customLRSDetails: Array<any> = [];
 
 	useCustomLRS: boolean = false;
 	showNewCustomLRSForm: boolean = false;
@@ -44,25 +44,35 @@ export class UnitLrsSetupComponent implements OnInit {
 
   		this.customLRSDetails = res.customLRS;
   		this.defaultLRSDetails = res.defaultLRS;
+
+      if (this.unitSetupService.getStepDetails().lrs != undefined) {
+         this.defaultLRS = this.defaultLRSDetails.id == this.unitSetupService.getStepDetails().lrs;
+
+         if (!this.defaultLRS) {
+           this.customLRSChoice = this.customLRSDetails.find(lrs => lrs.id == this.unitSetupService.getStepDetails().lrs).name;
+           this.useCustomLRS = !this.useCustomLRS;
+         }
+      }
   	});
+
   }
 
   setProperty(checked: boolean) {
   	this.defaultLRS = checked;
+
   }
 
   submitUnitForm() {
   	//(this.defaultLRS == true) ? this.unitSetupService.addUnitLRS({default: true}) : false; // TODO: add custom lrs model once this functionality is added.
-  	console.log("defaultLRS: ", this.defaultLRS);
   	if (this.defaultLRS) {
-  		console.log("using default lrs");
+
  		this.unitSetupService.addUnitLRS({default: true});
   	} else if (!this.defaultLRS) {
-  		console.log("using custom lrs:");
+
   		const lrs = this.customLRSDetails.find((lrs: any) => lrs.name == this.customLRSChoice);
-  		console.log(lrs);
-  		this.unitSetupService.addUnitLRS({ default: false, lrs: lrs});
-  	}
+
+		  this.unitSetupService.addUnitLRS({ default: false, lrs: lrs});
+    }
 
   }
 

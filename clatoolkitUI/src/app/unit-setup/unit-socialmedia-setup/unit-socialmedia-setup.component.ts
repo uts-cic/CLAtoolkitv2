@@ -32,6 +32,13 @@ export class UnitSocialmediaSetupComponent implements OnInit {
   constructor(private unitSetupService: UnitSetupService, private router: Router) { }
 
   ngOnInit() {
+    const previouslySavedDetails = this.unitSetupService.getStepDetails().social_media;
+    if (previouslySavedDetails != undefined) {
+      this.unitFormModelStep2 = previouslySavedDetails;
+      if (this.unitFormModelStep2.twitter != '') {
+        this.twitterEnabled = true;
+      }
+    }
   }
 
   submitUnitForm() {
@@ -39,7 +46,7 @@ export class UnitSocialmediaSetupComponent implements OnInit {
   	// this.validateSocialMediaInput() // Todo: later if required
 
   	this.unitSetupService.addSocialMediaDetails(this.unitFormModelStep2);
-  	this.router.navigate(['new/data-setup']);
+  	this.router.navigate(['unit/data-setup']);
   }
 
   toggleHashtagField() {
