@@ -24,6 +24,7 @@ export class HomeComponent implements OnInit {
   }
 
   setupNewUnit() {
+    this.unitService.prepareNewUnit();
   	this.router.navigate(['unit/unit-setup']);
   }
 

@@ -10,42 +10,40 @@ import { LrsModel } from '../../models/LrsModel';
   styleUrls: ['./unit-lrs-setup.component.css']
 })
 export class UnitLrsSetupComponent implements OnInit {
-
+    /*
+     Biggest issue here is that the way LRS's handle authentication differs
+     DESPITE complying with the xAPI LRS specification
+     Some ways that LRS's can handle Auth is:
+      - Basic Auth -> username:password (has to be base64 encoded before being used)
+      - Basic Auth Token -> As above but already b64 encoded, provided by LRS
+      - oAuth Token
+      - Other LRS provided Token
+     We will need to handle this for every custom LRS being used. WILL BE A PAIN
+     
+     For now, for the MVP, we will use the Default CLToolkit LRS.
+  */
 	defaultLRS: boolean = true;
-	// customLRS: boolean = false;
+  useCustomLRS: boolean = false;
+  showNewCustomLRSForm: boolean = false;
+
 	defaultLRSDetails: any;
 	customLRSDetails: Array<any> = [];
-
-	useCustomLRS: boolean = false;
-	showNewCustomLRSForm: boolean = false;
-
-	/*
-		 Biggest issue here is that the way LRS's handle authentication differs
-		 DESPITE complying with the xAPI LRS specification
-		 Some ways that LRS's can handle Auth is:
-		  - Basic Auth -> username:password (has to be base64 encoded before being used)
-		  - Basic Auth Token -> As above but already b64 encoded, provided by LRS
-		  - oAuth Token
-		  - Other LRS provided Token
-		 We will need to handle this for every custom LRS being used. WILL BE A PAIN
-		 
-		 For now, for the MVP, we will use the Default CLToolkit LRS.
-	*/
+  customLRSChoice: string;
 
 	lrsModel: LrsModel;
-
-	customLRSChoice: string;
+  headerText: string;
 
   constructor(private unitSetupService: UnitSetupService, private router: Router) { }
 
   ngOnInit() {
 	  this.unitSetupService.getLearningRecordStores().subscribe((res: any) => {
   		if (res.error) { console.error("Error grabbing LRS's from backend: ", res.error); }
-
+      this.headerText = "Create New Unit";
   		this.customLRSDetails = res.customLRS;
   		this.defaultLRSDetails = res.defaultLRS;
 
       if (this.unitSetupService.getStepDetails().lrs != undefined) {
+         this.headerText = "Edit " + this.unitSetupService.getStepDetails().unit.name;
          this.defaultLRS = this.defaultLRSDetails.id == this.unitSetupService.getStepDetails().lrs;
 
          if (!this.defaultLRS) {

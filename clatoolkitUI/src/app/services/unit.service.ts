@@ -72,4 +72,8 @@ export class UnitService {
   	});
   }
 
+  prepareNewUnit() {
+    this.unitSetupService.newUnit();
+  }
+
 }

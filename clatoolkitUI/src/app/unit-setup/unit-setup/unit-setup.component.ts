@@ -21,13 +21,17 @@ export class UnitSetupComponent implements OnInit {
 		ethicsStatement: ''
 	};
 
+  headerText: string;
+
   constructor(private unitSetupService: UnitSetupService, private router: Router,
     private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
+    this.headerText = "Create New Unit";
     const previouslySavedDetails = this.unitSetupService.getStepDetails().unit;
     if (previouslySavedDetails != undefined) {
       this.unitFormModelStep1 = previouslySavedDetails;
+      this.headerText = "Edit " + this.unitFormModelStep1.name;
     }
   }
 
