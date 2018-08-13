@@ -24,6 +24,7 @@ export class AuthService {
   			const decoded = this.jwt.decodeToken(res.token);
   			this.user = decoded;
   			localStorage.setItem('clatk-token', res.token);
+        nextRoute = nextRoute || '/home';
   			this.router.navigate([nextRoute]);
   			// done(undefined);
   		}
@@ -47,6 +48,11 @@ export class AuthService {
   			// done(undefined);
   		}
   	});
+  }
+
+  logout() {
+    localStorage.removeItem('clatk-token');
+    location.reload();
   }
 
 

@@ -25,7 +25,11 @@ const getDbUser = async (usrEmail: string) => {
    const user = await getDbUser(req.user.email);
 
    Unit.find({ created_by: user._id }, (err, units) => {
-     return res.status(200).json({ units: units });
+     Unit.find({ users: user._id }, (err, inunits) => {
+       units = units.concat(inunits);
+       return res.status(200).json({ units: units });
+     })
+     
    });
  };
 
