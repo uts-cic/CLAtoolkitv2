@@ -17,13 +17,13 @@
 		<div class="col-6">
 			<h4>Sign Up</h4>
 			<form (submit)="registerSubmit()">
-				<input type="text" id="register-email" class="form-control input-sm"
+				<input type="text" name="register-email" class="form-control input-sm"
 				[(ngModel)]="formModel.email"
 				placeholder="Email" />
-				<input type="password" id="register-password" class="form-control input-sm"
+				<input type="password" name="register-password" class="form-control input-sm"
 				[(ngModel)]="formModel.password" 
 				placeholder="Password" />
-				<input type="password" id="register-password-conf" class="form-control input-sm"
+				<input type="password" name="register-password-conf" class="form-control input-sm"
 				[(ngModel)]="formModel.passwordConf" 
 				placeholder="Password Confirmation" />
 

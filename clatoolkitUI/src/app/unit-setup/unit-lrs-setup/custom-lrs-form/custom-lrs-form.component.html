@@ -1,0 +1,27 @@
+<label for="lrs-name">Name</label>
+<input type="text" name="lrs-name" [(ngModel)]="lrsFormModel.name">
+
+<label for="lrs-endpoint">Endpoint</label>
+<input type="text" name="lrs-endpoint" placeholder="http://lrs.example.com/xapi/statements/" [(ngModel)]="lrsFormModel.endpoint">
+
+<h5>Authentication Method</h5>
+<button type="button" class="btn btn-sm btn-secondary" (click)="toggleBasicAuthForm()">
+	Username &amp; Password/Key &amp; Secret
+</button>
+<button type="button" class="btn btn-sm btn-secondary" (click)="toggleTokenAuthForm()">
+	Token
+</button>
+
+<div *ngIf="showBasicAuthForm">
+	<label for="lrs-basic-key">Username or Key</label>
+	<input type="text" name="lrs-basic-key" [(ngModel)]="lrsFormModel.config.basic_auth.key" placeholder="LRS username/key">
+
+	<label for="lrs-basic-secret">Password or Key Secret</label>
+	<input type="password" name="lrs-basic-secret" [(ngModel)]="lrsFormModel.config.basic_auth.secret" placeholder="LRS password/secret">
+</div>
+<div *ngIf="showTokenAuthForm">
+	<label for="lrs-token">Auth Token</label>
+	<input type="text" name="lrs-token" [(ngModel)]="lrsFormModel.config.token" placeholder="LRS auth token">
+</div>
+
+<button type="button" class="btn btn-sm btn-secondary" (click)="addLrs()">Add new LRS</button>

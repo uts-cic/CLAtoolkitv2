@@ -81,7 +81,7 @@ async getSignUpInputsFor(unit) {//: Observable<InputBase<any>[]> {
       		key: unitRequiredPlatforms.platform,
       		label: unitRequiredPlatforms.platform,
       		options: options,
-          required: unit.requiredPlatforms.required,
+          required: unitRequiredPlatforms.required,
       		order: i
       	}));
       }

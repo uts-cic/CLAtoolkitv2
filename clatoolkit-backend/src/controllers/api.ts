@@ -69,7 +69,7 @@ export let getSlackChannels = (req: Request, res: Response) => {
  * https://api.trello.com/1/members/me/boards?key=c908d424dda56c79d373f780a1ae26c7&token=81c71f407c43875b393ccdc878a37a3acae853e267d98f0358bbf0d93e97b616
  */
 export let getTrelloBoards = (req: Request, res: Response) => {
-  const key = process.env.TRELLO_ID;  
+  const key = process.env.TRELLO_APP_ID;  
 
   User.findOne({ email: req.user.email }, (err, user: UserModel) => {
     const userToken = user.tokens.find(tok => tok.platform == "trello").accessToken;
