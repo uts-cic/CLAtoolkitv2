@@ -1,4 +1,6 @@
 <li class="list-group-item">
-	{{unit.name}} - <a href="#" onclick="return false;" (click)="toggleRegisterLink()">[ Hide/Show Registration Link ]</a> | <a href="#" onclick="return false;" (click)="editUnit()">[ Edit ]</a>
+	<b>{{unit.code}}</b> {{unit.name}}<br/>
+
+	<a href="#" onclick="return false;" (click)="toggleRegisterLink()">[ Hide/Show Registration Link ]</a> | <a href="#" onclick="return false;" (click)="editUnit()">[ Edit ]</a>
 	<span class="" *ngIf="showRegistrationLink">{{getRegistrationLink(unit._id)}}</span>
 </li>

@@ -91,4 +91,13 @@ export class UnitSetupService {
     return this.unitData;
   }
 
+  newUnit() {
+    this.unitData = {
+      unit: undefined,
+      lrs: undefined,
+      social_media: undefined,
+      id: undefined
+    };
+  }
+
 }

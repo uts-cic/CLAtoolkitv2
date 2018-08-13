@@ -29,15 +29,20 @@ export class UnitSocialmediaSetupComponent implements OnInit {
     }
 	}
 
+  headerText: string;
+
   constructor(private unitSetupService: UnitSetupService, private router: Router) { }
 
   ngOnInit() {
+    this.headerText = "Create New Unit";
     const previouslySavedDetails = this.unitSetupService.getStepDetails().social_media;
     if (previouslySavedDetails != undefined) {
+
       this.unitFormModelStep2 = previouslySavedDetails;
       if (this.unitFormModelStep2.twitter != '') {
         this.twitterEnabled = true;
       }
+      this.headerText = "Edit " + this.unitSetupService.getStepDetails().unit.name;
     }
   }
 
