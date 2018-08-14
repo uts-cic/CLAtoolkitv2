@@ -31,6 +31,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "agenda": "^2.0.0",
     "async": "^2.1.2",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.15.2",
@@ -59,6 +60,7 @@
     "request": "^2.78.0"
   },
   "devDependencies": {
+    "@types/agenda": "^2.0.2",
     "@types/async": "^2.0.40",
     "@types/body-parser": "^1.16.2",
     "@types/connect-mongo": "0.0.32",
