@@ -18,13 +18,13 @@
 			<h4>Sign Up</h4>
 			<form (submit)="registerSubmit()">
 				<input type="text" name="register-email" class="form-control input-sm"
-				[(ngModel)]="formModel.email"
+				[(ngModel)]="formModelRegister.email"
 				placeholder="Email" />
 				<input type="password" name="register-password" class="form-control input-sm"
-				[(ngModel)]="formModel.password" 
+				[(ngModel)]="formModelRegister.password" 
 				placeholder="Password" />
 				<input type="password" name="register-password-conf" class="form-control input-sm"
-				[(ngModel)]="formModel.passwordConf" 
+				[(ngModel)]="formModelRegister.passwordConf" 
 				placeholder="Password Confirmation" />
 
 				<button type="submit" class="btn btn-sm btn-secondary" (click)="registerSubmit()">Register</button>

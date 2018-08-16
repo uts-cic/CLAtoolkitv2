@@ -12,17 +12,25 @@ export class AuthComponent implements OnInit {
 	formModel = {
 		email: undefined,
 		password: undefined,
-		passwordConf: undefined,
-		validate: () => {
-			if (this.formModel.password != this.formModel.passwordConf) {
-				this.formModel.errors = 'Passwords do not match';
-				return false;
-			} 
-
-			return true;
-		},
 		errors: undefined
 	}
+
+  formModelRegister = {
+    email: undefined,
+    password: undefined,
+    passwordConf: undefined,
+    validate: () => {
+      if (this.formModelRegister.password != this.formModelRegister.passwordConf) {
+        this.formModel.errors = 'Passwords do not match';
+        return false;
+      } 
+
+      return true;
+    },
+    errors: undefined
+  }
+
+
 
   nextRoute: string;
 
@@ -38,10 +46,10 @@ export class AuthComponent implements OnInit {
   }
 
   registerSubmit() {
-  	if (!this.formModel.validate()) {
-  		console.error("Error occurred registering user: ", this.formModel.errors);
+  	if (!this.formModelRegister.validate()) {
+  		console.error("Error occurred registering user: ", this.formModelRegister.errors);
   	} else {
-  		this.authService.registerUser(this.formModel, this.nextRoute, (err: any) => {
+  		this.authService.registerUser(this.formModelRegister, this.nextRoute, (err: any) => {
   			if (err) { console.error("Error occurred registering user: ", err); }
   		});
   	}
