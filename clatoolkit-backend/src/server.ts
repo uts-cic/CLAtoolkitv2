@@ -176,6 +176,10 @@ class App {
       in %s mode"), this.express.get("port"), this.express.get("env"));
       // tslint:disable-next-line:no-console
       console.log("  Press CTRL-C to stop\n");
+
+      // tslint:disable-next-line:no-console
+      console.log("GOT ENVVARS: ", process.env);
+
     });
   }
 }

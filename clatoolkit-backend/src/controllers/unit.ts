@@ -11,6 +11,8 @@ import { default as Unit, UnitModel, UnitPlatform } from "../models/Unit";
 import { default as UnitUserPlatform, UnitUserPlatformModel } from "../models/UnitUserPlatform";
 import { default as Lrs, LrsModel, CreateLrsFromData } from "../models/LearningRecordStore";
 
+import { default as agenda } from "../config/agenda/agenda";
+
 
 const getDbUser = async (usrEmail: string) => {
   return User.findOne({ email: usrEmail }).exec();
@@ -118,7 +120,7 @@ export let updateUnit = async (req: Request, res: Response) => {
 			// unitDoc.set(unitObj);
 			Unit.findByIdAndUpdate(req.body.id, { $set: unitObj }, (err: any, updatedUnit: any) => {
 				if (err) { return res.status(400).json({ error: err }); }
-				
+
 				return res.status(200).json({ success: true });
 			});
 		}
@@ -148,6 +150,14 @@ export let postUnit = async (req: Request, res: Response) => {
 
 		Unit.create(unitObj, (err: any, unit: any) => {
 			if (err) { return res.status(400).json({ error: err }); }
+
+			// Create the scrape schedule
+			const scrapeJobForUnit = agenda.create("social media scrape for unit", { unitId: unit._id });
+			scrapeJobForUnit.repeatEvery("3 minutes", {
+				skipImmediate: true
+			});
+			scrapeJobForUnit.save();
+
 
 			return res.status(200).json({ success: true });
 		});

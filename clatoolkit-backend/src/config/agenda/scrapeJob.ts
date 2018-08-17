@@ -5,10 +5,15 @@ import { default as User, UserModel } from "../../models/User";
 import { default as Lrs, LrsModel } from "../../models/LearningRecordStore";
 import * as mongoose from "mongoose";
 
+/**
+ * Scrape Job
+ * Job task for sending data off to data importer
+ * to create and send xAPI statements
+ */
+
 const objectId = mongoose.Types.ObjectId;
 
-
-let getAttachedUserPlatforms = async (userPlatformIds: Array<string>): Promise<Array<UnitUserPlatformModel>> => {
+const getAttachedUserPlatforms = async (userPlatformIds: Array<string>): Promise<Array<UnitUserPlatformModel>> => {
 	const userPlatformObjectIds = userPlatformIds.map(id => objectId(id));
 	return UnitUserPlatform.find({
 		"_id": {
@@ -19,7 +24,7 @@ let getAttachedUserPlatforms = async (userPlatformIds: Array<string>): Promise<A
 
 		return userAttachedPlatforms;
 	});
-}
+};
 
 export let scrapeJob = (agenda: Agenda): void => {
 	agenda.define("social media scrape for unit", (job, done) => {
@@ -28,7 +33,7 @@ export let scrapeJob = (agenda: Agenda): void => {
 
 			// Get social media platforms to be scraped
 			// Array of platforms e.g.: ["twitter", "trello", "github"]
-			//const socialMediaPlatforms = unit.platforms.map(plat => plat.platform);
+			// const socialMediaPlatforms = unit.platforms.map(plat => plat.platform);
 
 
 			for (const platform of unit.platforms.map(plat => plat.platform)) {
@@ -75,10 +80,17 @@ export let scrapeJob = (agenda: Agenda): void => {
 					payload.lrs = {};
 					payload.lrs.token = lrs.token;
 					payload.lrs.endpoint = lrs.host;
-				});
-			}
 
-			
+					payload.platform = platform;
+
+					console.log("---------------------");
+					console.log("UNIT SCRAP JOB");
+					console.log("PAYLOAD: ", payload);
+					console.log("---------------------");
+
+					done(); // call done or jobs become locked permenantly 
+				});
+			}	
 		});
 	});
-}
+};
