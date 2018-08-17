@@ -38,6 +38,7 @@ import lrsRouter from "./routes/lrs";
  * API keys and Passport configuration.
  */
 import * as passportConfig from "./config/passport";
+
 class App {
 
   // ref to Express instance
@@ -67,7 +68,9 @@ class App {
         url: process.env.MONGODB_URI || process.env.MONGOLAB_URI,
       }),
     }));
+    passportConfig.setupStrategies(passport);
     this.express.use(passport.initialize());
+
     // this.express.use(passport.session());
     // this.express.use(flash());
     // this.express.use(lusca.xframe("SAMEORIGIN"));
@@ -178,7 +181,7 @@ class App {
       console.log("  Press CTRL-C to stop\n");
 
       // tslint:disable-next-line:no-console
-      console.log("GOT ENVVARS: ", process.env);
+      // console.log("GOT ENVVARS: ", process.env);
 
     });
   }
