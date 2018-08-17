@@ -92,120 +92,125 @@ const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: an
 /**
  * Sign in with Facebook.
  */
-passport.use(new FacebookStrategy({
-  callbackURL: "/auth/facebook/callback",
-  clientID: process.env.FACEBOOK_ID,
-  clientSecret: process.env.FACEBOOK_SECRET,
-  passReqToCallback: true,
-  profileFields: ["name", "email", "link", "locale", "timezone"],
-}, (req: any, accessToken, refreshToken, profile, done) => {
-  if (req.user) {
-    User.findOne({ facebook: profile.id }, (err, existingUser) => {
-      if (err) { return done(err); }
-      if (existingUser) {
-        req.flash("errors", { msg: "There is already a Facebook account that belongs to you. \
-        Sign in with that account or delete it, then link it with your current account." });
-        done(err);
-      } else {
-        User.findById(req.user.id, (err, user: any) => {
-          if (err) { return done(err); }
-          user.facebook = profile.id;
-          user.tokens.push({ kind: "facebook", accessToken });
-          user.profile.name = user.profile.name || `${profile.name.givenName} ${profile.name.familyName}`;
-          user.profile.gender = user.profile.gender || profile._json.gender;
-          user.profile.picture = user.profile.picture || `https://graph.facebook.com/${profile.id}/picture?type=large`;
-          user.save((err: Error) => {
-            req.flash("info", { msg: "Facebook account has been linked." });
-            done(err, user);
-          });
-        });
-      }
-    });
-  } else {
-    User.findOne({ facebook: profile.id }, (err, existingUser) => {
-      if (err) { return done(err); }
-      if (existingUser) {
-        return done(undefined, existingUser);
-      }
-      User.findOne({ email: profile._json.email }, (err, existingEmailUser) => {
+
+export const setupStrategies = (passport: any) => {
+
+
+  passport.use(new FacebookStrategy({
+    callbackURL: "/auth/facebook/callback",
+    clientID: process.env.FACEBOOK_ID,
+    clientSecret: process.env.FACEBOOK_SECRET,
+    passReqToCallback: true,
+    profileFields: ["name", "email", "link", "locale", "timezone"],
+  }, (req: any, accessToken, refreshToken, profile, done) => {
+    if (req.user) {
+      User.findOne({ facebook: profile.id }, (err, existingUser) => {
         if (err) { return done(err); }
-        if (existingEmailUser) {
-          req.flash("errors", {
-            msg: "There is already an account using this email address. \
-            Sign in to that account and link it with Facebook manually from Account Settings." });
+        if (existingUser) {
+          req.flash("errors", { msg: "There is already a Facebook account that belongs to you. \
+          Sign in with that account or delete it, then link it with your current account." });
           done(err);
         } else {
-          const user: any = new User();
-          user.email = profile._json.email;
-          user.facebook = profile.id;
-          user.tokens.push({ kind: "facebook", accessToken });
-          user.profile.name = `${profile.name.givenName} ${profile.name.familyName}`;
-          user.profile.gender = profile._json.gender;
-          user.profile.picture = `https://graph.facebook.com/${profile.id}/picture?type=large`;
-          user.profile.location = (profile._json.location) ? profile._json.location.name : "";
-          user.save((err: Error) => {
-            done(err, user);
+          User.findById(req.user.id, (err, user: any) => {
+            if (err) { return done(err); }
+            user.facebook = profile.id;
+            user.tokens.push({ kind: "facebook", accessToken });
+            user.profile.name = user.profile.name || `${profile.name.givenName} ${profile.name.familyName}`;
+            user.profile.gender = user.profile.gender || profile._json.gender;
+            user.profile.picture = user.profile.picture || `https://graph.facebook.com/${profile.id}/picture?type=large`;
+            user.save((err: Error) => {
+              req.flash("info", { msg: "Facebook account has been linked." });
+              done(err, user);
+            });
           });
         }
       });
-    });
+    } else {
+      User.findOne({ facebook: profile.id }, (err, existingUser) => {
+        if (err) { return done(err); }
+        if (existingUser) {
+          return done(undefined, existingUser);
+        }
+        User.findOne({ email: profile._json.email }, (err, existingEmailUser) => {
+          if (err) { return done(err); }
+          if (existingEmailUser) {
+            req.flash("errors", {
+              msg: "There is already an account using this email address. \
+              Sign in to that account and link it with Facebook manually from Account Settings." });
+            done(err);
+          } else {
+            const user: any = new User();
+            user.email = profile._json.email;
+            user.facebook = profile.id;
+            user.tokens.push({ kind: "facebook", accessToken });
+            user.profile.name = `${profile.name.givenName} ${profile.name.familyName}`;
+            user.profile.gender = profile._json.gender;
+            user.profile.picture = `https://graph.facebook.com/${profile.id}/picture?type=large`;
+            user.profile.location = (profile._json.location) ? profile._json.location.name : "";
+            user.save((err: Error) => {
+              done(err, user);
+            });
+          }
+        });
+      });
+    }
+  }));
+
+  /**
+   * Trello Sign In
+   * Retrieves and saves trello credentials for a user, for clatoolkit data scraping later via importers
+   * (user access token)
+   */
+  // if (process.env.TRELLO_APP_ID && process.env.TRELLO_APP_SECRET) {
+  //  console.log("USING TRELLO AUTH STRATEGY");
+    passport.use(new TrelloStrategy({
+      consumerKey: process.env.TRELLO_APP_ID,
+      consumerSecret: process.env.TRELLO_APP_SECRET,
+      callbackURL: "/social/trello/callback",
+      passReqToCallback: true,
+      trelloParams: {
+        scope: "read,write",
+        name: process.env.TRELLO_APP_NAME,
+        expiration: "never"
+      }}, (req: any, token: any, tokenSecret: any, profile: any, cb: any) => {
+        processSocial("trello", token, tokenSecret, profile, cb, req);
+    }));
+  // }
+
+  /**
+   * Slack Sign In
+   * Retrieves and saves slack credentials for user, for clatoolkit data scraping later
+   */
+  if (process.env.SLACK_APP_ID && process.env.SLACK_APP_SECRET) {
+    passport.use(new SlackStrategy({
+      clientID: process.env.SLACK_APP_ID,
+      clientSecret: process.env.SLACK_APP_SECRET,
+      callbackURL: "/social/slack/callback",
+      passReqToCallback: true,
+      skipUserProfile: false,
+      scope: ["channels:read", "channels:history", "files:read", "dnd:read", "groups:read", "groups:history",
+               "im:history", "im:read", "pins:read", "reactions:read", "reminders:read", "search:read",
+               "team:read", "stars:read", "usergroups:read", "users.profile:read", "users:read"]
+    }, (req: any, accessToken: any, refreshToken: any, profile: any, cb: any) => {
+      processSocial("slack", accessToken, refreshToken, profile, cb, req);
+    }));
   }
-}));
 
-/**
- * Trello Sign In
- * Retrieves and saves trello credentials for a user, for clatoolkit data scraping later via importers
- * (user access token)
- */
-if (process.env.TRELLO_APP_ID && process.env.TRELLO_APP_SECRET) {
-  console.log("USING TRELLO AUTH STRATEGY");
-  passport.use(new TrelloStrategy({
-    consumerKey: process.env.TRELLO_APP_ID,
-    consumerSecret: process.env.TRELLO_APP_SECRET,
-    callbackURL: "/social/trello/callback",
-    passReqToCallback: true,
-    trelloParams: {
-      scope: "read,write",
-      name: process.env.TRELLO_APP_NAME,
-      expiration: "never"
-    }}, (req: any, token: any, tokenSecret: any, profile: any, cb: any) => {
-      processSocial("trello", token, tokenSecret, profile, cb, req);
-  }));
-}
-
-/**
- * Slack Sign In
- * Retrieves and saves slack credentials for user, for clatoolkit data scraping later
- */
-if (process.env.SLACK_APP_ID && process.env.SLACK_APP_SECRET) {
-  passport.use(new SlackStrategy({
-    clientID: process.env.SLACK_APP_ID,
-    clientSecret: process.env.SLACK_APP_SECRET,
-    callbackURL: "/social/slack/callback",
-    passReqToCallback: true,
-    skipUserProfile: false,
-    scope: ["channels:read", "channels:history", "files:read", "dnd:read", "groups:read", "groups:history",
-             "im:history", "im:read", "pins:read", "reactions:read", "reminders:read", "search:read",
-             "team:read", "stars:read", "usergroups:read", "users.profile:read", "users:read"]
-  }, (req: any, accessToken: any, refreshToken: any, profile: any, cb: any) => {
-    processSocial("slack", accessToken, refreshToken, profile, cb, req);
-  }));
-}
-
-/**
- * Github Sign In
- * Retrieves and saves github credentials for user, for clatoolkit data scraping later
- */
-if (process.env.GITHUB_APP_ID && process.env.GITHUB_APP_SECRET) {
-  passport.use(new GithubStrategy({
-    clientID: process.env.GITHUB_APP_ID,
-    clientSecret: process.env.GITHUB_APP_SECRET,
-    callbackURL: "/social/github/callback",
-    passReqToCallback: true,
-  }, (req: any, accessToken: any, refreshToken: any, profile: any, cb: any) => {
-    processSocial("github", accessToken, refreshToken, profile, cb, req);
-  }));
-}
+  /**
+   * Github Sign In
+   * Retrieves and saves github credentials for user, for clatoolkit data scraping later
+   */
+  if (process.env.GITHUB_APP_ID && process.env.GITHUB_APP_SECRET) {
+    passport.use(new GithubStrategy({
+      clientID: process.env.GITHUB_APP_ID,
+      clientSecret: process.env.GITHUB_APP_SECRET,
+      callbackURL: "/social/github/callback",
+      passReqToCallback: true,
+    }, (req: any, accessToken: any, refreshToken: any, profile: any, cb: any) => {
+      processSocial("github", accessToken, refreshToken, profile, cb, req);
+    }));
+  }
+};
 
 
 /**
@@ -230,6 +235,7 @@ export let isAuthorized = (req: Request, res: Response, next: NextFunction) => {
     res.redirect(`/auth/${provider}`);
   }
 };
+
 
 
 /**
