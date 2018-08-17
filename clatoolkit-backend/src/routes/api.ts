@@ -12,7 +12,7 @@ class Api {
     this.init();
   }
   private init() {
-    this.router.get("/facebook", passportConfig.isAuthenticated, apiController.getFacebook);
+    this.router.post("/import", Auth.JwtAuthorized, apiController.getFacebook);
   }
 }
 

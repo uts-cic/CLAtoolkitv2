@@ -4,13 +4,19 @@ from social_imports import TrelloImporter, TwitterImporter, GithubImporter, Slac
 
 app = Flask(__name__)
 
-@app.route("/trello", methods = ['POST'])
-def import_trello:
+
+import_map_dict = {
+	'trello': TrelloImporter,
+	'twitter': TwitterImporter,
+	'github': GithubImporter,
+	'slack': SlackImporter
+}
+
+@app.route("/dataimport", methods = ['POST'])
+def data_import:
 	content = request.get_json(force=True)
-	importer = TrelloImporter(content)
+	importer = import_map_dict[content.platform](content)
 	importer.perform_import()
-
-
 
 if __name__ == "__main__":
 	app.run(debug=True)

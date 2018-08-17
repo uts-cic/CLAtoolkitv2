@@ -158,6 +158,7 @@ passport.use(new FacebookStrategy({
  * (user access token)
  */
 if (process.env.TRELLO_APP_ID && process.env.TRELLO_APP_SECRET) {
+  console.log("USING TRELLO AUTH STRATEGY");
   passport.use(new TrelloStrategy({
     consumerKey: process.env.TRELLO_APP_ID,
     consumerSecret: process.env.TRELLO_APP_SECRET,

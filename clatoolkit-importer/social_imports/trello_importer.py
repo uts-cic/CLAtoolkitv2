@@ -61,7 +61,7 @@ class TrelloImporter(object):
     MESSAGE_CARD_POSITION_CHANGED = 'Card position was changed.'
 
     def __init__(self, message):
-            self.key = message['app_key'] #'c908d424dda56c79d373f780a1ae26c7'
+            self.key = message['appKey'] #'c908d424dda56c79d373f780a1ae26c7'
             self.token = message['oauth_token']
             print message
             self.TrelloCient = TrelloClient(
