@@ -6,6 +6,7 @@ import datetime
 
 from xapi.importer import *
 from xapi.settings import xapi_settings
+from xapi.lrs import LRS
 from .utils.user_utils import user_exists_in_toolkit, get_other_contextActivity
 from .utils.date_utils import *
 
@@ -75,24 +76,33 @@ class SlackImporter():
                                                   xapi_settings.VERB_SHARED, xapi_settings.VERB_MENTIONED,
                                                   xapi_settings.VERB_LIKED, xapi_settings.VERB_REMOVED]
 
-    def __init__(self, msg):
-        self.users_teams_tokens = msg['retreival_param']
+    def __init__(self, msg, platformToken):
+        print 'platformToken: %s' % platformToken
+        #self.users_teams_tokens = msg['retreival_param']
         self.unit = msg['unit']
+        self.token = platformToken['token']
+        self.unit = msg['unit']
+        self.userPlatforms = msg['userPlatforms']
+        self.lrs = LRS(msg['lrs']['token'], msg['lrs']['endpoint'])
 
     def perform_import(self):
 
         # retrieval_param has access tokens of all users in a unit
-        for user_team_token in self.users_teams_tokens:
-            sc = SlackClient(user_team_token['user_token'])
+        #for user_team_token in self.users_teams_tokens:
+        sc = SlackClient(self.token)
+        print "TOKEN %s" % self.token
+        # Get team data
+        team_info = self.get_team_info(sc)
+        # Get all channel names in a team
+        channels = self.get_channels(sc)
+        # Get history of a channel
+        self.import_channel_history(self.unit, sc, channels, team_info)
+        # Get data about stars
 
-            # Get team data
-            team_info = self.get_team_info(sc)
-            # Get all channel names in a team
-            channels = self.get_channels(sc)
-            # Get history of a channel
-            self.import_channel_history(self.unit, sc, channels, team_info)
-            # Get data about stars
-            self.import_stars(user_team_token['user_sm_id'], self.unit, sc, team_info)
+        this_user = [user_sm_id['userSMId'] for user_sm_id in self.userPlatforms if user_sm_id['userToken'] == self.token]
+        if len(this_user) > 0:
+            this_user = this_user[0] 
+            self.import_stars(this_user, self.unit, sc, team_info)
 
     def import_channel_history(self, unit, slack, channels, team_info):
         team_domain_name = team_info['team']['domain']
@@ -169,7 +179,7 @@ class SlackImporter():
             # User left a message on a channel or user replied to someone's message (in a thread).
             user = message['user']
 
-            user = user_exists_in_toolkit(user, self.unit, self.platform) #get_user_from_screen_name(user, self.platform)
+            user = user_exists_in_toolkit(user, self.userPlatforms, self.platform) #get_user_from_screen_name(user, self.platform)
             if user is None:
                 return
 
@@ -182,27 +192,27 @@ class SlackImporter():
             if 'parent_user_id' in message:
                 # User replied to someone's message (in a thread).
                 parent_id = self.get_slack_archive_url(team_domain_name, channel['name'], message['thread_ts'])
-                parent_user = user_exists_in_toolkit(message['parent_user_id'], self.unit, self.platform)
+                parent_user = user_exists_in_toolkit(message['parent_user_id'], self.userPlatforms, self.platform)
                 # parent_user = get_user_from_screen_name(message['parent_user_id'], self.platform)
-                insert_comment(user, parent_id, object_id, text, created_time, unit, self.platform, self.platform_url,
+                insert_comment(self.lrs, user, parent_id, object_id, text, created_time, unit, self.platform, self.platform_url,
                                parent_user=parent_user)
 
             else:
                 # User left a message on a channel
-                insert_post(user, object_id, text, created_time, unit, self.platform, self.platform_url)
+                insert_post(self.lrs, user, object_id, text, created_time, unit, self.platform, self.platform_url)
 
     def import_file_comment(self, message, unit, slack, team_domain_name, channel):
         prop = self.get_file_comment_details(message, slack, team_domain_name, channel)
         if prop.user is None:
             return
-        insert_comment(prop.user, prop.parent_id, prop.object_id, prop.message, prop.datetime, unit,
+        insert_comment(self.lrs, prop.user, prop.parent_id, prop.object_id, prop.message, prop.datetime, unit,
                        self.platform, self.platform_url, parent_user=prop.parent_user)
 
     def import_file_share(self, message, unit, slack, team_domain_name, channel):
         prop = self.get_shared_file_details(message, slack, team_domain_name, channel)
         if prop.user is None:
             return
-        insert_share(prop.user, prop.parent_id, prop.object_id, prop.message, prop.datetime, unit,
+        insert_share(self.lrs, prop.user, prop.parent_id, prop.object_id, prop.message, prop.datetime, unit,
                      prop.object_type, prop.parent_object_type,
                      self.platform, self.platform_url, parent_user=prop.parent_user)
 
@@ -210,7 +220,7 @@ class SlackImporter():
         prop = self.get_shared_file_details(message, slack, team_domain_name, channel)
         if prop.user is None:
             return
-        insert_mention(prop.user, prop.parent_id, prop.object_id, prop.message, prop.datetime, unit,
+        insert_mention(self.lrs, prop.user, prop.parent_id, prop.object_id, prop.message, prop.datetime, unit,
                        prop.object_type, prop.parent_object_type,
                        self.platform, self.platform_url, parent_user=prop.parent_user)
 
@@ -219,7 +229,7 @@ class SlackImporter():
         if message['bot_id'] is not None:
             return
 
-        user = user_exists_in_toolkit(message['user'], self.unit, self.platform)
+        user = user_exists_in_toolkit(message['user'], self.userPlatforms, self.platform)
         if user is None:
             return
 
@@ -240,7 +250,7 @@ class SlackImporter():
                 object_id, 'Object', message['file']['initial_comment']['comment'],
                 xapi_settings.get_object_iri(xapi_settings.OBJECT_NOTE)))
 
-        insert_attach(user, parent_id, object_id, text, created_time, unit,
+        insert_attach(self.lrs, user, parent_id, object_id, text, created_time, unit,
                       xapi_settings.OBJECT_FILE, xapi_settings.OBJECT_COLLECTION,
                       self.platform, self.platform_url, parent_external_user=parent_user_external,
                       other_contexts=other_context_list)
@@ -259,7 +269,7 @@ class SlackImporter():
             prop = self.get_file_comment_details(message, slack, team_domain_name, channel)
             if prop.user is None:
                 return
-            insert_comment(prop.user, prop.parent_id, prop.object_id, prop.message, prop.datetime, unit,
+            insert_comment(self.lrs, prop.user, prop.parent_id, prop.object_id, prop.message, prop.datetime, unit,
                          self.platform, self.platform_url, parent_user=prop.parent_user)
 
     def import_unpinned_item(self, message, unit, slack, team_domain_name, channel):
@@ -274,7 +284,7 @@ class SlackImporter():
             for shared_msg in shared_msg_list:
                 if shared_msg.user is None:
                     continue
-                insert_remove(shared_msg.user, shared_msg.object_id, shared_msg.message,
+                insert_remove(self.lrs, shared_msg.user, shared_msg.object_id, shared_msg.message,
                               shared_msg.datetime, unit, shared_msg.object_type, self.platform, self.platform_url)
 
 
@@ -284,7 +294,7 @@ class SlackImporter():
             if prop.user is None:
                 return
 
-            insert_remove(prop.user, prop.object_id, prop.message, prop.datetime, unit, prop.object_type,
+            insert_remove(self.lrs, prop.user, prop.object_id, prop.message, prop.datetime, unit, prop.object_type,
                           self.platform, self.platform_url)
 
 
@@ -293,7 +303,7 @@ class SlackImporter():
             if prop.user is None:
                 return
 
-            insert_remove(prop.user, prop.object_id, prop.message, prop.datetime, unit, prop.object_type,
+            insert_remove(self.lrs, prop.user, prop.object_id, prop.message, prop.datetime, unit, prop.object_type,
                           self.platform, self.platform_url)
 
     def import_message_share(self, message, unit, slack, team_domain_name, channel):
@@ -302,7 +312,7 @@ class SlackImporter():
         for shared_msg in shared_msg_list:
             if shared_msg.user is None:
                 continue
-            insert_share(shared_msg.user, shared_msg.parent_id, shared_msg.object_id, shared_msg.message,
+            insert_share(self.lrs, shared_msg.user, shared_msg.parent_id, shared_msg.object_id, shared_msg.message,
                          shared_msg.datetime, unit, shared_msg.object_type, shared_msg.parent_object_type,
                          self.platform, self.platform_url, parent_user=shared_msg.parent_user,
                          parent_external_user=shared_msg.parent_user_external,
@@ -322,7 +332,7 @@ class SlackImporter():
                     continue
 
                 # user = get_user_from_screen_name(slack_user_id, self.platform)
-                user = user_exists_in_toolkit(slack_user_id, self.unit, self.platform)
+                user = user_exists_in_toolkit(slack_user_id, self.userPlatforms, self.platform)
                 if user is None:
                     continue
                 #
@@ -374,7 +384,7 @@ class SlackImporter():
                 text = self.replace_slack_user_id_with_name(slack, text)
 
                 # Insert data into LRS
-                insert_bookmark(user, parent_id, object_id, text, starred_datetime, unit,
+                insert_bookmark(self.lrs, user, parent_id, object_id, text, starred_datetime, unit,
                                 object_type, parent_object_type, self.platform, self.platform_url)
 
             paging_info = stars['paging']
@@ -390,12 +400,15 @@ class SlackImporter():
     def get_shared_message_list(self, message, slack, team_domain_name, channel):
         msg_list = []
         timestamp = message['ts']  # Unix timestamp.
-        for attachment in message['attachments']:
+
+        # SKIP SHARED MESSAGE LIST - SLACK API NOT RETURNING PROPER RESPONSE - probably token
+
+        '''for attachment in message['attachments']:
             prop = self.XAPIProperty()
             prop.message = self.replace_slack_user_id_with_name(slack, attachment['text'])
 
             # prop.user = get_user_from_screen_name(message['user'], self.platform)
-            prop.user = user_exists_in_toolkit(message['user'], self.unit, self.platform)
+            prop.user = user_exists_in_toolkit(message['user'], self.userPlatforms, self.platform)
 
             prop.object_id = attachment['from_url']#self.get_slack_archive_url(team_domain_name, channel['name'], timestamp)
             prop.parent_id = self.get_slack_archive_url(team_domain_name, channel['name'], timestamp)
@@ -403,10 +416,11 @@ class SlackImporter():
             prop.parent_object_type = xapi_settings.OBJECT_NOTE
             prop.datetime = convert_unixtime_to_datetime(timestamp)  # Datetime converted from unix timestamp
 
-            slack_parent_user = self.get_slack_user_from_slackname(slack, attachment['author_subname'])
+            
+            slack_parent_user = self.get_slack_user_from_slackname(slack, attachment['author_subname']) if 'author_subname' in attachment else None
             if slack_parent_user is not None:
                 #prop.parent_user = get_user_from_screen_name(slack_parent_user['id'], self.platform)
-                prop.parent_user = user_exists_in_toolkit(slack_parent_user['id'], self.unit, self.platform)
+                prop.parent_user = user_exists_in_toolkit(slack_parent_user['id'], self.userPlatforms, self.platform)
 
             #prop.parent_user_external = attachment['author_subname'] if prop.parent_user is None else None
 
@@ -419,7 +433,7 @@ class SlackImporter():
                     prop.object_id, 'Object', message['text'],
                     xapi_settings.get_verb_iri(xapi_settings.VERB_COMMENTED)))
 
-            msg_list.append(prop)
+            msg_list.append(prop)'''
 
         return msg_list
 
@@ -438,7 +452,7 @@ class SlackImporter():
         prop.message = self.replace_slack_user_id_with_name(slack, message[property_name]['title'])
 
         #prop.user = get_user_from_screen_name(message['user'], self.platform)
-        prop.user = user_exists_in_toolkit(message['user'], self.unit, self.platform)
+        prop.user = user_exists_in_toolkit(message['user'], self.userPlatforms, self.platform)
         prop.object_id = self.get_slack_archive_url(team_domain_name, channel['name'], message['ts'])
 
         # When user shared/pinned a file, the parent user is the owner of the file shared/pinned,
@@ -448,7 +462,7 @@ class SlackImporter():
         prop.parent_object_type = xapi_settings.OBJECT_FILE
 
         #prop.parent_user = get_user_from_screen_name(message[property_name]['user'], self.platform)
-        prop.parent_user = user_exists_in_toolkit(message[property_name]['user'], self.unit, self.platform)
+        prop.parent_user = user_exists_in_toolkit(message[property_name]['user'], self.userPlatforms, self.platform)
 
         prop.parent_user_external = message[property_name]['user'] if prop.parent_user is None else None
         prop.datetime = convert_unixtime_to_datetime(message['ts'])  # Datetime converted from unix timestamp
@@ -462,7 +476,7 @@ class SlackImporter():
         if 'file' in message:
             # Left a comment on a file
             #prop.user = get_user_from_screen_name(message['comment']['user'], self.platform)
-            prop.user = user_exists_in_toolkit(message['comment']['user'], self.unit, self.platform)
+            prop.user = user_exists_in_toolkit(message['comment']['user'], self.userPlatforms, self.platform)
             prop.message = self.replace_slack_user_id_with_name(slack, message['comment']['comment'])
             prop.object_id = self.get_slack_archive_url(team_domain_name, channel['name'],
                                                         message['comment']['timestamp'])
@@ -471,18 +485,18 @@ class SlackImporter():
             prop.parent_object_type = xapi_settings.OBJECT_FILE
 
             #prop.parent_user = get_user_from_screen_name(message['file']['user'], self.platform)
-            prop.parent_user = user_exists_in_toolkit(message['file']['user'], self.unit, self.platform)
+            prop.parent_user = user_exists_in_toolkit(message['file']['user'], self.userPlatforms, self.platform)
 
         elif 'item' in message:
             # Pinned a comment that's on a file
             #prop.user = get_user_from_screen_name(message['user'], self.platform)
-            prop.user = user_exists_in_toolkit(message['user'], self.unit, self.platform)
+            prop.user = user_exists_in_toolkit(message['user'], self.userPlatforms, self.platform)
             prop.message = self.replace_slack_user_id_with_name(slack, message['item']['comment'])
             prop.object_id = self.get_slack_archive_url(team_domain_name, channel['name'], message['ts'])
             prop.parent_id = self.get_slack_archive_url(team_domain_name, channel['name'], message['item']['timestamp'])
             prop.object_type = xapi_settings.OBJECT_NOTE
             prop.parent_object_type = xapi_settings.OBJECT_NOTE
-            prop.parent_user = user_exists_in_toolkit(message['item']['user'], self.unit, self.platform)
+            prop.parent_user = user_exists_in_toolkit(message['item']['user'], self.userPlatforms, self.platform)
             #prop.parent_user = get_user_from_screen_name(message['item']['user'], self.platform)
 
         return prop
@@ -534,7 +548,7 @@ class SlackImporter():
         text = text.replace('<!channel>', '@channel')
 
         # Find all Slack user IDs in a text string
-        user_id_list = re.findall(regex_pattern, str(text))
+        user_id_list = re.findall(regex_pattern, text)
         if len(user_id_list) == 0:
             return text
 

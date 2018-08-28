@@ -57,7 +57,7 @@ const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: an
        if (existingUser.profile.socialMediaUserIds == undefined) {
          existingUser.profile.socialMediaUserIds = {};
        }
-       existingUser.profile.socialMediaUserIds[<string>provider] = profile.id;
+       existingUser.profile.socialMediaUserIds[provider] = profile.id;
 
        // Add Users social media auth token to list of auth tokens on user account
        existingUser.tokens = existingUser.tokens.concat([token]);
@@ -188,7 +188,7 @@ export const setupStrategies = (passport: any) => {
       callbackURL: "/social/slack/callback",
       passReqToCallback: true,
       skipUserProfile: false,
-      scope: ["channels:read", "channels:history", "files:read", "dnd:read", "groups:read", "groups:history",
+      scope: ["identity:basic", "channels:read", "channels:history", "files:read", "dnd:read", "groups:read", "groups:history",
                "im:history", "im:read", "pins:read", "reactions:read", "reminders:read", "search:read",
                "team:read", "stars:read", "usergroups:read", "users.profile:read", "users:read"]
     }, (req: any, accessToken: any, refreshToken: any, profile: any, cb: any) => {

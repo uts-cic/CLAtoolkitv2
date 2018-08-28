@@ -39,11 +39,11 @@ def save_statement_tofile(filename,stm):
     jsn = ast.literal_eval(stm.to_json())
     write_json_tofile(filename, jsn)
 
-def statement_builder(statement_id, actor, verb, object, context, result, timestamp=None):
+def statement_builder(actor, verb, object, context, result, timestamp=None):
     statement = None
     if timestamp is None:
         statement = Statement(
-               id=statement_id,
+              # id=statement_id,
             actor=actor,
              verb=verb,
            object=object,
@@ -52,7 +52,7 @@ def statement_builder(statement_id, actor, verb, object, context, result, timest
         )
     else:
         statement = Statement(
-            id=statement_id,
+            # id=statement_id,
             actor=actor,
             verb=verb,
             object=object,
@@ -74,7 +74,7 @@ def get_other_contextActivity(obj_id, obj_type, def_name, def_type):
     return ret
 
 
-def socialmedia_builder(statement_id, verb, platform, account_name, account_homepage, object_type, object_id,
+def socialmedia_builder(verb, platform, account_name, account_homepage, object_type, object_id,
                         message, tags=[], parent_object_type=None, parent_id=None, rating=None, instructor_name=None,
                         instructor_email=None, team_name=None, unit=None, account_email=None, user_name=None,
                         timestamp=None, other_contexts=[]):
@@ -165,7 +165,7 @@ def socialmedia_builder(statement_id, verb, platform, account_name, account_home
         result = Result(score=Score(raw=rating_as_float))
 
     context = Context(
-        registration=uuid.uuid4(),
+        # registration=uuid.uuid4(),
         platform=platform,
         instructor=instructor,
         team=team,
@@ -178,7 +178,7 @@ def socialmedia_builder(statement_id, verb, platform, account_name, account_home
 
     #authority = Group(Agent(account=account))
 
-    statement = statement_builder(statement_id, actor, verb_obj, object, context, result, timestamp)
+    statement = statement_builder(actor, verb_obj, object, context, result, timestamp)
 
     return statement
 

@@ -5,6 +5,8 @@ import { default as User, UserModel } from "../../models/User";
 import { default as Lrs, LrsModel } from "../../models/LearningRecordStore";
 import * as mongoose from "mongoose";
 
+import * as request from "request";
+
 /**
  * Scrape Job
  * Job task for sending data off to data importer
@@ -38,6 +40,11 @@ export let scrapeJob = (agenda: Agenda): void => {
 
 			for (const platform of unit.platforms.map(plat => plat.platform)) {
 				const userAttachedPlatformForPlatform: any[] = [];
+
+				// If a particular platform (trello board/slack channel/github repo)
+				// appears multiple times - we only need to grab one user token per board
+				const platformTokens: any[] = []; 
+
 				if (platform == "twitter") {
 					// get user ids for twitter
 					// and retrieval param for sending below;
@@ -46,7 +53,8 @@ export let scrapeJob = (agenda: Agenda): void => {
 					for (const userPlatform of await getAttachedUserPlatforms(unit.attached_user_platforms)) {
 					
 						if (userPlatform.platform == platform) {
-							const details: any = { platformIdentifier: undefined, 
+							const details: any = { 
+								platformIdentifier: undefined, 
 								username: undefined, 
 								userSMId: undefined,
 								userToken: undefined 
@@ -61,16 +69,25 @@ export let scrapeJob = (agenda: Agenda): void => {
 							});
 						}
 					}
-
-
-
 				}
+
+				// Get platform target (trello board/slack channel/github repo):token mappings
+				for (const userPlatform of userAttachedPlatformForPlatform) {
+					if (!(platformTokens.some(platform => platform.identifier == userPlatform.platformIdentifier))) {
+						const obj: any = {};
+						obj.identifier = userPlatform.platformIdentifier;
+						obj.token = userPlatform.userToken;
+						platformTokens.push(obj);
+					}
+				}
+
 				// post request to ~~platform~~ endpoint with user details
 				// Some social media require app key as well as app token
 				Lrs.findOne({ _id: objectId(unit.lrs)}, (err, lrs: LrsModel) => {
 					const payload: any = {};
 
 					payload.unit = unit;
+					payload.platformTokens = platformTokens;
 					payload.userPlatforms = userAttachedPlatformForPlatform;
 
 					if (platform == "trello") {
@@ -83,10 +100,17 @@ export let scrapeJob = (agenda: Agenda): void => {
 
 					payload.platform = platform;
 
-					console.log("---------------------");
-					console.log("UNIT SCRAP JOB");
-					console.log("PAYLOAD: ", payload);
-					console.log("---------------------");
+					// console.log("---------------------");
+					// console.log("UNIT SCRAP JOB");
+					// console.log("PAYLOAD: ", payload);
+					// console.log("---------------------");
+
+					const hardCodedImporterEndpoint = "http://127.0.0.1:5000/dataimport";
+					request.post(hardCodedImporterEndpoint, { json: payload }, (err, httpResponse, body) => {
+						console.log("Err: ", err);
+						// console.log("httpResponse: ", httpResponse);
+						// console.log("body: ", body);
+					});
 
 					done(); // call done or jobs become locked permenantly 
 				});
