@@ -50,7 +50,6 @@ class App {
     this.middleware();
     this.routes();
     this.launchConf();
-
   }
   private middleware(): void {
     this.express.set("port", process.env.PORT || 3000);
@@ -74,6 +73,7 @@ class App {
     // this.express.use(passport.session());
     // this.express.use(flash());
     // this.express.use(lusca.xframe("SAMEORIGIN"));
+    
     this.express.use(lusca.xssProtection(true));
     this.express.use((req, res, next) => {
       res.locals.user = req.user;

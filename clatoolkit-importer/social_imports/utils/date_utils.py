@@ -15,6 +15,11 @@ def convert_to_datetime_object(timestr):
 
 
 def convert_unixtime_to_datetime(unix_time):
-    unix_time = float(unix_time)
-    return datetime.fromtimestamp(unix_time)
+    unix_time = unix_time.split('.')[0] if len(unix_time.split('.')) > 1 else unix_time
+    unix_time = int(unix_time)
+    d = datetime.fromtimestamp(unix_time, pytz.UTC)
+    #s = d.strftime('%Y-%m-%d %H:%M:%S.%f')
+    print "FORMATTED DATETIME: %s " % d
+
+    return d
 

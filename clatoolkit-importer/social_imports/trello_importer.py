@@ -7,6 +7,7 @@ from trello import TrelloClient
 from xapi.importer import *
 from xapi.settings import xapi_settings
 from .utils.user_utils import user_exists_in_toolkit, get_other_contextActivity
+from xapi.lrs import LRS
 
 class TrelloImporter(object):
     platform = xapi_settings.PLATFORM_TRELLO
@@ -60,18 +61,20 @@ class TrelloImporter(object):
     SEPARATOR_HTML_TAG_BR = "<br>"
     MESSAGE_CARD_POSITION_CHANGED = 'Card position was changed.'
 
-    def __init__(self, message):
+    def __init__(self, message, platformToken):
             self.key = message['appKey'] #'c908d424dda56c79d373f780a1ae26c7'
-            self.token = message['oauth_token']
-            print message
+            self.token = platformToken['token']
+            # print message
             self.TrelloCient = TrelloClient(
                 api_key=self.key,
                 #api_secret=message['app_secret'],
                 token=self.token,
                 #token_secret=message['oauth_secret']
             )
-            self.retreival_param = message['retreival_param'][0]['identifier'] # TODO: Support multiple trello boards
+            self.retreival_param = platformToken['identifier'] # User's trello board id
             self.unit = message['unit']
+            self.userPlatforms = message['userPlatforms']
+            self.lrs = LRS(message['lrs']['token'], message['lrs']['endpoint'])
 
     # retreival param is the user_id
     def perform_import(self):
@@ -105,7 +108,7 @@ class TrelloImporter(object):
                 comment_id = target_obj_id + '/' + action['id']
                 card_name = data['card']['name']
 
-                user = user_exists_in_toolkit(comment_from_uid, unit, self.platform)
+                user = user_exists_in_toolkit(comment_from_uid, self.userPlatforms, self.platform)
                 if user is not None:
                     # Create "other" contextActivity object to store original activity in xAPI
                     card_details = self.TrelloCient.fetch_json('/cards/' + data['card']['id'])
@@ -118,7 +121,8 @@ class TrelloImporter(object):
                     other_context_list = [context, context2]
 
                     #user = get_user_from_screen_name(comment_from_uid, self.platform)
-                    insert_comment(user, target_obj_id, comment_id, comment_message, date, unit,
+                    print "Insert comment"
+                    insert_comment(self.lrs, user, target_obj_id, comment_id, comment_message, date, unit,
                                    self.platform, self.platform_url, parent_user_external=card_name,
                                    other_contexts=other_context_list)
 
@@ -127,7 +131,7 @@ class TrelloImporter(object):
                 card_name = data['card']['name']
                 parent_id = self.create_list_url(data)
 
-                user = user_exists_in_toolkit(u_id, unit, self.platform)
+                user = user_exists_in_toolkit(u_id, self.userPlatforms, self.platform)
                 if user is not None:
                     # Create "other" contextActivity object to store original activity in xAPI
                     card_details = self.TrelloCient.fetch_json('/cards/' + data['card']['id']);
@@ -141,7 +145,8 @@ class TrelloImporter(object):
                     # usr_dict = ClaUserUtil.get_user_details_by_smid(u_id, self.platform)
                     #user = get_user_from_screen_name(u_id, self.platform)
 
-                    insert_task(user, object_id, card_name, date, unit, self.platform, self.platform_url,
+                    print "Insert task"
+                    insert_task(self.lrs, user, object_id, card_name, date, unit, self.platform, self.platform_url,
                                 parent_id=parent_id, other_contexts=other_context_list)
 
             # Get all 'add' verbs (you tecnically aren't *creating* an attachment on a card so....)
@@ -176,7 +181,8 @@ class TrelloImporter(object):
                         card_details['shortUrl'], 'Object', attachment['url'],
                         xapi_settings.get_verb_iri(xapi_settings.VERB_ADDED)))
 
-                    insert_added_object(user, card_url, attachment_id, attachment_data, date, unit,
+                    print "inset added obj"
+                    insert_added_object(self.lrs, user, card_url, attachment_id, attachment_data, date, unit,
                                         self.platform, self.platform_url, object_type,
                                         parent_user_external=parent_user_external,
                                         other_contexts=other_context_list)
@@ -188,7 +194,8 @@ class TrelloImporter(object):
                     object_type = xapi_settings.OBJECT_PERSON
                     parent_user_external = '%sc/%s' % (self.platform_url, card_url)
 
-                    insert_added_object(user, card_url, object_id, object_data, date, unit,
+                    print "inset added obj"
+                    insert_added_object(self.lrs, user, card_url, object_id, object_data, date, unit,
                                         self.platform, self.platform_url, object_type,
                                         parent_user_external=parent_user_external,
                                         other_contexts=other_context_list)
@@ -216,14 +223,15 @@ class TrelloImporter(object):
                             card_details['shortUrl'], 'Object', item['name'],
                             xapi_settings.get_verb_iri(xapi_settings.VERB_ADDED)))
 
-                    insert_added_object(user, card_url, object_id, object_data, date, unit,
+                    print "inset added obj"
+                    insert_added_object(self.lrs, user, card_url, object_id, object_data, date, unit,
                                         self.platform, self.platform_url, object_type,
                                         parent_user_external=parent_user_external,
                                         other_contexts=other_context_list)
 
             if (type in [self.ACTION_TYPE_UPDATE_CHECKITEM_STATE_ON_CARD, self.ACTION_TYPE_UPDATE_CARD]):
                 #user = get_user_from_screen_name(u_id, self.platform)
-                user = user_exists_in_toolkit(u_id, unit, self.platform)
+                user = user_exists_in_toolkit(u_id, self.userPlatforms, self.platform)
                 if user is None:
                     continue
 
@@ -248,7 +256,8 @@ class TrelloImporter(object):
                         card_details['shortUrl'], 'Object', data['card']['name'],
                         xapi_settings.get_verb_iri(xapi_settings.VERB_UPDATED)))
 
-                    insert_updated_object(user, object_id, obj_val, date, unit, self.platform, self.platform_url,
+                    print "inset updated obj"
+                    insert_updated_object(self.lrs, user, object_id, obj_val, date, unit, self.platform, self.platform_url,
                                           xapi_settings.OBJECT_CHECKLIST_ITEM,
                                           parent_id=self.create_checklist_url(data),
                                           obj_parent_type=xapi_settings.OBJECT_CHECKLIST,
@@ -287,7 +296,7 @@ class TrelloImporter(object):
                             card_details['shortUrl'], 'Object', str(data['card']['pos']),
                             xapi_settings.get_verb_iri(xapi_settings.VERB_UPDATED)))
 
-                        insert_updated_object(user, object_id, object_text, date, unit, self.platform,
+                        insert_updated_object(self.lrs, user, object_id, object_text, date, unit, self.platform,
                                               self.platform_url,
                                               xapi_settings.OBJECT_TASK, parent_id=self.create_list_url(data),
                                               obj_parent_type=xapi_settings.OBJECT_COLLECTION,
@@ -311,7 +320,7 @@ class TrelloImporter(object):
                                 card_details['shortUrl'], 'Object', data['listAfter']['name'],
                                 xapi_settings.get_verb_iri(xapi_settings.VERB_UPDATED)))
 
-                            insert_updated_object(user, object_id, object_text, date, unit, self.platform,
+                            insert_updated_object(self.lrs, user, object_id, object_text, date, unit, self.platform,
                                                   self.platform_url,
                                                   xapi_settings.OBJECT_TASK, parent_id=self.create_card_url(data),
                                                   obj_parent_type=xapi_settings.OBJECT_COLLECTION,
@@ -336,7 +345,8 @@ class TrelloImporter(object):
                             other_context_list.append(get_other_contextActivity(
                                 card_details['shortUrl'], 'Object', data['list']['name'], verb_iri))
 
-                            insert_closedopen_object(user, object_id, object_text, date, unit,
+                            print "insert closedopen obj"
+                            insert_closedopen_object(self.lrs, user, object_id, object_text, date, unit,
                                                      self.platform, self.platform_url,
                                                      xapi_settings.OBJECT_TASK, verb,
                                                      parent_id=self.create_list_url(data),

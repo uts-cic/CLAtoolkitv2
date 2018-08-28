@@ -2,13 +2,15 @@ import base64
 import requests
 import json
 
+import sqlite3
+
 
 class LRS(object):
 
-    def __init__(self, lrs_key, lrs_secret, lrs_basic_auth=None, lrs_host=None):
-        self.lrs_key = lrs_key
-        self.lrs_secret = lrs_secret
-        self.lrs_basic_auth = lrs_basic_auth if lrs_basic_auth else base64.b64encode(self.lrs_key + ":" + self.lrs_secret)
+    def __init__(self, lrs_token, lrs_host):
+        # self.lrs_key = lrs_key
+        # self.lrs_secret = lrs_secret
+        self.lrs_basic_auth = lrs_token # if lrs_basic_auth else base64.b64encode(self.lrs_key + ":" + self.lrs_secret)
         self.lrs_host = lrs_host if lrs_host else 'http://54.206.83.184/data/xAPI/statements'
 
 
@@ -23,9 +25,9 @@ class LRS(object):
         headers['Content-Type'] = 'application/json'
         #print headers
         data = json.loads(statement)
-        statement_id = json.loads(statement)['id']
-        print("STATEMENT ID:")
-        print statement_id
+        #statement_id = json.loads(statement)['id']
+        #print("STATEMENT ID:")
+        #print statement_id
         # params = { 'statementId': statement_id }
 
         print("DATA:")

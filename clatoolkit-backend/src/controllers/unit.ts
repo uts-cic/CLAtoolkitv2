@@ -153,7 +153,7 @@ export let postUnit = async (req: Request, res: Response) => {
 
 			// Create the scrape schedule
 			const scrapeJobForUnit = agenda.create("social media scrape for unit", { unitId: unit._id });
-			scrapeJobForUnit.repeatEvery("3 minutes", {
+			scrapeJobForUnit.repeatEvery("10 minutes", {
 				skipImmediate: true
 			});
 			scrapeJobForUnit.save();
