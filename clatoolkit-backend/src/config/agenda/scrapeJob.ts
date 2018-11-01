@@ -13,6 +13,14 @@ import * as request from "request";
  * to create and send xAPI statements
  */
 
+// Temporary Mapping between social media and importer method as we transition from
+// python importers to new GraphQL importer
+// Add new social media here as they become available for import in GraphQL
+const importUrlForPlatform: any = {
+	"twitter": process.env.GRAPHQL_IMPORTER_URL,
+	"python_import": process.env.PYTHON_IMPORTER_URL
+};
+
 const objectId = mongoose.Types.ObjectId;
 
 const getAttachedUserPlatforms = async (userPlatformIds: Array<string>): Promise<Array<UnitUserPlatformModel>> => {
@@ -29,7 +37,7 @@ const getAttachedUserPlatforms = async (userPlatformIds: Array<string>): Promise
 };
 
 export let scrapeJob = (agenda: Agenda): void => {
-	agenda.define("social media scrape for unit", (job, done) => {
+	agenda.define("social media scrape for unit", (job: any, done: any) => {
 		Unit.findOne(job.attrs.data.unitId, async (err, unit) => {
 			if (err) { return done(err); }
 
@@ -105,8 +113,8 @@ export let scrapeJob = (agenda: Agenda): void => {
 					// console.log("PAYLOAD: ", payload);
 					// console.log("---------------------");
 
-					const hardCodedImporterEndpoint = "http://127.0.0.1:5000/dataimport";
-					request.post(hardCodedImporterEndpoint, { json: payload }, (err, httpResponse, body) => {
+					const importerEndpoint: string = (platform in importUrlForPlatform) ? importUrlForPlatform[platform] : importUrlForPlatform["python_import"];
+					request.post(importerEndpoint, { json: payload }, (err, httpResponse, body) => {
 						console.log("Err: ", err);
 						// console.log("httpResponse: ", httpResponse);
 						// console.log("body: ", body);
