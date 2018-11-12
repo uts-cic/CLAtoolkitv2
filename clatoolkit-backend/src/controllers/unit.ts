@@ -204,14 +204,6 @@ export let postSignUp = async (req: Request, res: Response) => {
 
 			userPlatformDocs.push(userPlatform);
 
-			// console.log("userPlatform: ", userPlatform);
-
-			/* Save userplatform record and save ID to unit.attached_user_platforms for reference
-			userPlatform.save((err, savedUserPlatform) => {
-				console.log("savedUserPlatform: ", savedUserPlatform);
-				//unit.attached_user_platforms = unit.attached_user_platforms.concat([savedUserPlatform._id]);
-				savedUserPlatformIds.push(savedUserPlatform._id);
-			}); */
 		}
 
 		UnitUserPlatform.collection.insertMany(userPlatformDocs, (err, savedDocs) => {

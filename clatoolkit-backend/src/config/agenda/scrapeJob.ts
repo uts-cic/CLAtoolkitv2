@@ -36,19 +36,29 @@ const getAttachedUserPlatforms = async (userPlatformIds: Array<string>): Promise
 	});
 };
 
+/**
+ * Job to perform Scraping
+ *
+ * Retreives Unit from Mongo with supplied UnitID sent to job
+ * Unit details specifies the Social Media platforms in use, to be scraped
+ * Retreives user access tokens to access user data on the social media platform
+ * Retreives specified LRS to send data to from unit details
+ * Sends information (unit details, users in unit, SM access tokens) to third party "importer"
+ * "Importer" retrieves relevent data from SM APIs, converts to xAPI statements, and sends to LRS.
+ */
 export let scrapeJob = (agenda: Agenda): void => {
 	agenda.define("social media scrape for unit", (job: any, done: any) => {
+		// Retreives Unit from Mongo with supplied UnitID sent to job
 		Unit.findOne(job.attrs.data.unitId, async (err, unit) => {
 			if (err) { return done(err); }
 
 			// Get social media platforms to be scraped
 			// Array of platforms e.g.: ["twitter", "trello", "github"]
-			// const socialMediaPlatforms = unit.platforms.map(plat => plat.platform);
-
-
+			// Unit details specifies the Social Media platforms in use, to be scraped
 			for (const platform of unit.platforms.map(plat => plat.platform)) {
 				const userAttachedPlatformForPlatform: any[] = [];
 
+				// Retreives user access tokens to access user data on the social media platform
 				// If a particular platform (trello board/slack channel/github repo)
 				// appears multiple times - we only need to grab one user token per board
 				const platformTokens: any[] = []; 
@@ -69,7 +79,8 @@ export let scrapeJob = (agenda: Agenda): void => {
 							};
 							
 							await User.findOne({ _id: objectId(userPlatform.belongsTo)}, (err, user: UserModel) => {
-								details.platformIdentifier = userPlatform.platformIdentifier;
+								// Platform Identifier is an ID of a User's attached platform (i.e.: The ID of a trello board, the ID of a github repo)
+								details.platformIdentifier = userPlatform.platformIdentifier; 
 								details.username = user.email;
 								details.userSMId = user.profile.socialMediaUserIds[platform];
 								details.userToken = user.tokens.find(tok => tok.platform == platform).accessToken;
@@ -81,6 +92,7 @@ export let scrapeJob = (agenda: Agenda): void => {
 
 				// Get platform target (trello board/slack channel/github repo):token mappings
 				for (const userPlatform of userAttachedPlatformForPlatform) {
+					// We only need the Token of one Attached platform. (E.g.: Multiple users might use the same Trello board, we only need the token of one of these users)
 					if (!(platformTokens.some(platform => platform.identifier == userPlatform.platformIdentifier))) {
 						const obj: any = {};
 						obj.identifier = userPlatform.platformIdentifier;
@@ -89,17 +101,18 @@ export let scrapeJob = (agenda: Agenda): void => {
 					}
 				}
 
-				// post request to ~~platform~~ endpoint with user details
-				// Some social media require app key as well as app token
+				// Retreives specified LRS to send data to from unit details
 				Lrs.findOne({ _id: objectId(unit.lrs)}, (err, lrs: LrsModel) => {
-					const payload: any = {};
+					// Payload is information sent to Importer to: get SM api data, compile xAPI statements with correct information, LRS details to send xAPI statements to
+					const payload: any = {}; 
 
 					payload.unit = unit;
 					payload.platformTokens = platformTokens;
-					payload.userPlatforms = userAttachedPlatformForPlatform;
+					payload.userPlatforms = userAttachedPlatformForPlatform; // UserPlatformForPlatform = a Trello board on Trello, a Repo on Github, etc.
 
+					// Some social media require app key as well as app token
 					if (platform == "trello") {
-						payload.appKey = process.env.TRELLO_APP_ID;
+						payload.appKey = process.env.TRELLO_APP_ID; // Might be able to remove with GraphQL importer
 					}
 
 					payload.lrs = {};
@@ -108,11 +121,7 @@ export let scrapeJob = (agenda: Agenda): void => {
 
 					payload.platform = platform;
 
-					// console.log("---------------------");
-					// console.log("UNIT SCRAP JOB");
-					// console.log("PAYLOAD: ", payload);
-					// console.log("---------------------");
-
+					// Sends information (unit details, users in unit, SM access tokens) to third party "importer"
 					const importerEndpoint: string = (platform in importUrlForPlatform) ? importUrlForPlatform[platform] : importUrlForPlatform["python_import"];
 					request.post(importerEndpoint, { json: payload }, (err, httpResponse, body) => {
 						console.log("Err: ", err);

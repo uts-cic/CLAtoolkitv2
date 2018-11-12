@@ -12,6 +12,7 @@ import { default as User, AuthToken } from "../models/User";
 import * as passportTrello from "passport-trello";
 import * as passportSlack from "passport-slack";
 import * as passportGithub from "passport-github2";
+import * as passportTwitter from "passport-twitter";
 
 
 const LocalStrategy = passportLocal.Strategy;
@@ -19,6 +20,7 @@ const FacebookStrategy = passportFacebook.Strategy;
 const TrelloStrategy = passportTrello.Strategy;
 const SlackStrategy = passportSlack.Strategy;
 const GithubStrategy = passportGithub.Strategy;
+const TwitterStrategy = passportTwitter.Strategy;
 
 passport.serializeUser<any, any>((user, done) => {
   done(undefined, user.id);
@@ -156,6 +158,16 @@ export const setupStrategies = (passport: any) => {
     }
   }));
 
+
+  passport.use(new TwitterStrategy({
+    consumerKey: process.env.TWITTER_CONSUMER_KEY,
+    consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+    callbackURL: "/social/twitter/callback",
+    passReqToCallback: true
+  }, (req: any, token: any, tokenSecret: any, profile: any, cb: any) => {
+    processSocial("twitter", token, tokenSecret, profile, cb, req);
+  }));
+  
   /**
    * Trello Sign In
    * Retrieves and saves trello credentials for a user, for clatoolkit data scraping later via importers

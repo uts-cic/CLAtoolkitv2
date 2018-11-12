@@ -56,6 +56,7 @@
     "passport-local": "^1.0.0",
     "passport-slack": "0.0.7",
     "passport-trello": "^0.1.5",
+    "passport-twitter": "^1.0.4",
     "pug": "^2.0.0-beta11",
     "request": "^2.88.0"
   },
@@ -84,7 +85,7 @@
     "concurrently": "^3.4.0",
     "jest": "^19.0.2",
     "node-sass": "^4.9.4",
-    "nodemon": "^1.18.5",
+    "nodemon": "^1.18.6",
     "shelljs": "^0.7.7",
     "supertest": "^2.0.1",
     "ts-jest": "^19.0.8",
