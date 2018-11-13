@@ -22,6 +22,11 @@ const platforms_enabled = {
     "slack": platforms_enabled_setting.some(x => x == "slack"),
     "trello": platforms_enabled_setting.some(x => x == "trello")
 };
+const get_importer = {
+    "twitter": (module, db) => {
+        return new module.TwitterImporter(db);
+    }
+};
 exports.cloneObject = () => {
     let object = {
         "definition": {
@@ -101,20 +106,13 @@ exports.importSocialMediaStatementsForUnit = (unitId) => __awaiter(this, void 0,
     const db = client.db("clatoolkit-backend");
     const Units = db.collection("units");
     const unit = yield Units.findOne({ _id: new mongodb_1.ObjectId(unitId) });
-    /* console.log("unitId: ", unitId);
-    console.log("objectId(unitId): ", new ObjectId(unitId));
-    console.log("unit: ", unit);
-    console.log("units: ", await Units.find({}).toArray()); */
     let statements_created = [];
     for (const platform of unit.platforms.map((x) => x.platform)) {
         let sts;
-        console.log("platform: ", platform);
-        console.log("platforms_enabled:  ", platforms_enabled);
-        console.log("platforms_enabled[platform]: ", platforms_enabled[platform]);
         if (platforms_enabled[platform]) {
-            const platformImporter = yield Promise.resolve().then(() => __importStar(require("./importers/" + platform)));
-            sts = yield platformImporter.createStatements(unit, db);
-            console.log("STS: ", sts);
+            const platformImporterModule = yield Promise.resolve().then(() => __importStar(require("./importers/" + platform)));
+            const platformImporter = get_importer[platform](platformImporterModule, db);
+            sts = yield platformImporter.createStatements(unit);
             statements_created = statements_created.concat(sts);
         }
     }

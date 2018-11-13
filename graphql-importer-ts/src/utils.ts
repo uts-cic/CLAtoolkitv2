@@ -1,4 +1,4 @@
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient, ObjectId, Db } from "mongodb";
 
 const platforms_enabled_setting = (<string>process.env.ENABLED_PLATFORMS).split(",");
 const platforms_enabled: any = {
@@ -6,6 +6,12 @@ const platforms_enabled: any = {
     "slack": platforms_enabled_setting.some(x => x == "slack"),
     "trello": platforms_enabled_setting.some(x => x == "trello")
 };
+
+const get_importer: any = {
+    "twitter": (module: any, db: Db) => {
+        return new module.TwitterImporter(db);
+    }
+}
 
 export const cloneObject = () => {
     let object = {
@@ -101,8 +107,10 @@ export const importSocialMediaStatementsForUnit = async (unitId: string): Promis
         let sts;
 
         if (platforms_enabled[platform]) {
-            const platformImporter = await import("./importers/"+platform);
-            sts = await platformImporter.createStatements(unit, db);
+            const platformImporterModule = await import("./importers/"+platform);
+            const platformImporter = get_importer[platform](platformImporterModule, db);
+            
+            sts = await platformImporter.createStatements(unit);
 
             statements_created = statements_created.concat(sts);
         }

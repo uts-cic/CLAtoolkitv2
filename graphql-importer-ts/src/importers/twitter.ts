@@ -2,6 +2,7 @@ import { Db, ObjectId } from "mongodb";
 import Twit from "twit";
 import { cloneStatement, cloneObject } from "../utils";
 
+import { Importer } from "./importer";
 
 /*
 *  ADL XAPIwrapper no longer maintained
@@ -14,8 +15,100 @@ import { cloneStatement, cloneObject } from "../utils";
 */
 import * as ADL from "adl-xapiwrapper";
 
+export class TwitterImporter extends Importer {
+	
+	constructor(db: Db) {
+		super(db);
+	}
 
-export const createStatements = async (unit: any, db: Db): Promise<any> => {
+	public async createStatements(unit: any): Promise<any> {
+		const unitUserList = await this.getUnitUsers(unit);
+
+	 	let res: Array<any> = [];
+		for (const user of unitUserList) {
+			const user_twitter_token = user.tokens.find((x: any) => x.platform == "twitter");
+			let retrieval_params_for_twitter: any = unit.platforms.find((x: any) => x.platform == "twitter").retrieval_param.split(",");
+
+			retrieval_params_for_twitter = (retrieval_params_for_twitter.length > 1) ? retrieval_params_for_twitter.join(" ") : retrieval_params_for_twitter[0]; 
+
+			const twitter =  Twit({
+				consumer_key: process.env.TWITTER_CONSUMER_KEY,
+				consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+				access_token: user_twitter_token.accessToken,
+				access_token_secret: user_twitter_token.accessSecret
+			});
+			
+			const posts = await twitter.get("search/tweets", { q: retrieval_params_for_twitter, tweet_mode: "extended", lang: "en"});
+
+			const stmts = this.mapTweetsToxAPI(posts, unitUserList);
+
+			const lrsconf = await this.getUnitLrsConf(unit.lrs);
+
+			const response = await this.insertIntoLRS(stmts, lrsconf);
+
+			res = res.concat(response);
+
+		}
+
+		return res;
+	}
+
+	private mapTweetsToxAPI(tweets: any, unitUserList: any) {
+		// Todo: add twitter name, clatoolkit names of users that where tagged, clatoolkit user id
+		return tweets.data.statuses.map((tweet: any) => {
+			const stmt = cloneStatement();
+
+			stmt.actor.objectType = "Agent";
+			stmt.actor.account.name = unitUserList.find((user: any) => user.profile.socialMediaUserIds.twitter == tweet.user.id_str).email;
+			stmt.actor.account.homePage = "http://clatoolkit.com";
+			/* todo: verbs
+			*/
+			stmt.verb = this.getVerbForTweet(tweet);
+			stmt.object.id = "http://twitter.com/statuses/" + tweet.id;
+			stmt.object.objectType = "Activity";
+			stmt.object.definition.name["en-US"] = tweet.full_text;
+			stmt.object.definition.description["en-US"] = tweet.source;
+			stmt.context.platform = "Twitter";
+			if (tweet.entities.hashtags.length > 0) {
+				stmt.context["extensions"] = { "http://id.tincanapi.com/extension/tags" : [] };
+			}
+			tweet.entities.hashtags.forEach((hashtag: any) => {
+				stmt.context.extensions["http://id.tincanapi.com/extension/tags"].push(hashtag);
+			});
+
+			tweet.entities.user_mentions.forEach((user: any) => {
+				let tempObject = cloneObject();
+				tempObject.definition.name["en-US"] = user.screen_name;
+				tempObject.definition.type = "http://activitystream.ms/tag";
+				stmt.context.contextActivities.other.push(tempObject);
+			});
+
+			console.log("stmt: ", JSON.stringify(stmt));
+
+			return stmt;
+		});
+	}
+
+	private getVerbForTweet(tweet: any): any {
+		const verb: any = {};
+
+		if ((<string>tweet.full_text).indexOf("RT") != -1) {
+			verb["id"] = "http://id.tincanapi.com/verb/retweeted";
+			verb["display"] = {};
+			verb["display"]["en-US"] = "retweeted"
+		} else {
+			verb["id"] = "http://id.tincanapi.com/verb/tweeted";
+			verb["display"] = {};
+			verb["display"]["en-US"] = "tweeted"
+		}
+
+		return verb;
+	}
+}
+
+
+
+/*export const createStatements = async (unit: any, db: Db): Promise<any> => {
 	const unitUserList = await db.collection("users").find({
 		_id: {
 			$in: unit.users.map((userIdStr: string) => new ObjectId(userIdStr))
@@ -54,9 +147,9 @@ export const createStatements = async (unit: any, db: Db): Promise<any> => {
 	}
 
 	return res;
-};
+};*/
 
-const insertIntoLRS = async (stmts: any, conf: any) => {
+/*const insertIntoLRS = async (stmts: any, conf: any) => {
 
 	const result = stmts.map(async (stmt: any) => {
 		const ts = await insertLRS(stmt, conf);
@@ -75,9 +168,9 @@ const insertLRS = (stmts: any, conf: any) => {
 			return resolve(stmts);
 		});
 	});
-}
+}*/
 
-const mapTweetsToxAPI = (tweets: any, unitUserList: any) => {
+/*const mapTweetsToxAPI = (tweets: any, unitUserList: any) => {
 	// Todo: add twitter name, clatoolkit names of users that where tagged, clatoolkit user id
 	return tweets.data.statuses.map((tweet: any) => {
 		const stmt = cloneStatement();
@@ -86,7 +179,7 @@ const mapTweetsToxAPI = (tweets: any, unitUserList: any) => {
 		stmt.actor.account.name = unitUserList.find((user: any) => user.profile.socialMediaUserIds.twitter == tweet.user.id_str).email;
 		stmt.actor.account.homePage = "http://clatoolkit.com";
 		/* todo: verbs
-		*/
+		*
 		stmt.verb.id = "http://testverb.com.au/verb";
 		stmt.verb.display["en-US"] = "test verb";
 		stmt.object.id = "http://twitter.com/statuses/" + tweet.id;
@@ -111,4 +204,4 @@ const mapTweetsToxAPI = (tweets: any, unitUserList: any) => {
 
 		return stmt;
 	});
-}
+}*/
