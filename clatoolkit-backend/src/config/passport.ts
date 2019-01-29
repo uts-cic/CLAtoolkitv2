@@ -104,7 +104,7 @@ export const setupStrategies = (passport: any) => {
     clientSecret: process.env.FACEBOOK_SECRET,
     passReqToCallback: true,
     profileFields: ["name", "email", "link", "locale", "timezone"],
-  }, (req: any, accessToken, refreshToken, profile, done) => {
+  }, (req: any, accessToken: any, refreshToken: any, profile: any, done: any) => {
     if (req.user) {
       User.findOne({ facebook: profile.id }, (err, existingUser) => {
         if (err) { return done(err); }
