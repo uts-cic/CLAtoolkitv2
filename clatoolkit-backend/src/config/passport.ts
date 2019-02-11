@@ -55,15 +55,18 @@ const processSocial = (provider: any, accessToken: any, refreshOrSecretToken: an
        };
 
        // Add Social Media profile id to user account
-       console.log("existingUser.profile.socialMediaUserIds: ", existingUser.profile.socialMediaUserIds);
+       // console.log("existingUser.profile.socialMediaUserIds: ", existingUser.profile.socialMediaUserIds);
        if (existingUser.profile.socialMediaUserIds == undefined) {
          existingUser.profile.socialMediaUserIds = {};
        }
+
        existingUser.profile.socialMediaUserIds[provider] = profile.id;
 
        // Add Users social media auth token to list of auth tokens on user account
        existingUser.tokens = existingUser.tokens.concat([token]);
 
+       // Mongoose requires that you explicitly state that a nested object as been modified in a record.
+       existingUser.markModified("profile");
        existingUser.save((err: Error) => {
          if (err) { done(err); }
 
@@ -173,7 +176,7 @@ export const setupStrategies = (passport: any) => {
    * Retrieves and saves trello credentials for a user, for clatoolkit data scraping later via importers
    * (user access token)
    */
-  // if (process.env.TRELLO_APP_ID && process.env.TRELLO_APP_SECRET) {
+  if (process.env.TRELLO_APP_ID && process.env.TRELLO_APP_SECRET) {
   //  console.log("USING TRELLO AUTH STRATEGY");
     passport.use(new TrelloStrategy({
       consumerKey: process.env.TRELLO_APP_ID,
@@ -187,7 +190,7 @@ export const setupStrategies = (passport: any) => {
       }}, (req: any, token: any, tokenSecret: any, profile: any, cb: any) => {
         processSocial("trello", token, tokenSecret, profile, cb, req);
     }));
-  // }
+  }
 
   /**
    * Slack Sign In
@@ -200,10 +203,14 @@ export const setupStrategies = (passport: any) => {
       callbackURL: "/social/slack/callback",
       passReqToCallback: true,
       skipUserProfile: false,
-      scope: ["identity:basic", "channels:read", "channels:history", "files:read", "dnd:read", "groups:read", "groups:history",
+      scope: /*["identity.basic", "channels:read", "channels:history", "files:read", "dnd:read", "groups:read", "groups:history",
                "im:history", "im:read", "pins:read", "reactions:read", "reminders:read", "search:read",
-               "team:read", "stars:read", "usergroups:read", "users.profile:read", "users:read"]
+               "team:read", "stars:read"]*/
+               ["users.profile:read", "channels:read", "channels:history", "files:read", "dnd:read", "groups:read", "groups:history",
+               "im:history", "im:read", "pins:read", "reactions:read", "reminders:read", "search:read",
+               "team:read", "stars:read"]
     }, (req: any, accessToken: any, refreshToken: any, profile: any, cb: any) => {
+      console.log("USER PROFILE: ",  profile);
       processSocial("slack", accessToken, refreshToken, profile, cb, req);
     }));
   }

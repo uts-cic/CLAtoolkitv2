@@ -48,6 +48,14 @@ class Oauth {
 
       res.redirect(returnURL);
     });
+
+    this.router.get("/github", Auth.JwtAuthorized, passport.authenticate("github"));
+    this.router.get("/github/callback", passport.authenticate("github"), (req: Request, res: Response) => {
+      const returnURL = req.session.clatkReturnTo;
+      delete req.session.clatkReturnTo;
+
+      res.redirect(returnURL);
+    });
     // this.router.get("slack/channels", Auth.JwtAuthorized, apiController.getSlackChannels);
   
 

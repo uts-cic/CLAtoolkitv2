@@ -21,6 +21,8 @@ const importUrlForPlatform: any = {
 	"python_import": process.env.PYTHON_IMPORTER_URL
 };
 
+const graphQLImporter: string = "http://127.0.0.1:8080/graph";
+
 const objectId = mongoose.Types.ObjectId;
 
 const getAttachedUserPlatforms = async (userPlatformIds: Array<string>): Promise<Array<UnitUserPlatformModel>> => {
@@ -48,6 +50,41 @@ const getAttachedUserPlatforms = async (userPlatformIds: Array<string>): Promise
  */
 export let scrapeJob = (agenda: Agenda): void => {
 	agenda.define("social media scrape for unit", (job: any, done: any) => {
+		/* request.post(graphQLImporter, { json: { query: "twitter(unit_id:"+job.attrs.data.unitId+",type:User" } }, (err, httpResponse, body) => {
+			console.log("Err: ", err);
+			console.log("httpResponse: ", httpResponse);
+			console.log("body: ", body);
+		}); */
+
+		// Get social media platforms to be scraped
+		// Array of platforms e.g.: ["twitter", "trello", "github"]
+		Unit.findOne(job.attrs.data.unitId, async (err, unit) => {
+			for (const platform of unit.platforms.map(plat => plat.platform)) {
+				let platType;
+
+				switch (platform) { 
+					case "twitter":
+						platType = "User";
+					break;
+					case "slack": 
+						platType = "Messages";
+					break;
+				}
+
+				// {"query": "query { twitter(unit_id:\"5c57bce193aab208347e30b4\",type:\"User\"){ data { id }}}"}
+				const body = { "query": "query { " + platform + "(unit_id:\"" + job.attrs.data.unitId + "\",type:\"" + platType + "\"){ data { id }}}"};
+				request.post(graphQLImporter, { json: body }, (err, httpResponse, body) => {
+					console.log("err: ", err);
+					console.log("httpResponse: ", httpResponse);
+					console.log("body: ", body);
+				});
+			}
+		});
+
+		done();
+
+
+		/*
 		// Retreives Unit from Mongo with supplied UnitID sent to job
 		Unit.findOne(job.attrs.data.unitId, async (err, unit) => {
 			if (err) { return done(err); }
@@ -132,6 +169,6 @@ export let scrapeJob = (agenda: Agenda): void => {
 					done(); // call done or jobs become locked permenantly 
 				});
 			}	
-		});
+		});*/
 	});
 };

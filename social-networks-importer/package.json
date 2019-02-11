@@ -1,0 +1,27 @@
+{
+  "name": "social_graph",
+  "version": "0.0.1",
+  "description": "social network importer",
+  "main": "graphql.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "chezecz",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/graphql": "^1.0.0",
+    "@octokit/graphql-schema": "^4.19.0",
+    "@octokit/rest": "^16.1.0",
+    "@slack/client": "^4.8.0",
+    "adl-xapiwrapper": "^0.2.3",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "express-graphql": "^0.7.1",
+    "graphql": "^14.0.2",
+    "graphql-tag": "^2.10.0",
+    "graphql-tools": "^4.0.3",
+    "mongodb": "^3.1.13",
+    "node-trello": "^1.3.0",
+    "twit": "^2.2.11"
+  }
+}

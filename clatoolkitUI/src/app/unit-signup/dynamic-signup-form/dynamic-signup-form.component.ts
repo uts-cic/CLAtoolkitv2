@@ -31,6 +31,10 @@ export class DynamicSignupFormComponent implements OnInit {
   	this.unitService.registerUser(this.form.value);
   }
 
+  formValid(): boolean {
+    return this.form.status == "DISABLED" ? true : this.form.valid;
+  }
+
 
 
 }

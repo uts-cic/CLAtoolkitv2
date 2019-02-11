@@ -38,7 +38,7 @@ export class DynamicFormService {
           input.value = "#" + input.value;
         }
 
-  			group[input.key] = new FormControl({ value: input.value || '', disabled: true});
+  			group[input.key] = new FormControl({ value: input.value || '', disabled: true}, Validators.nullValidator);
   		} else {
   			group[input.key] = input.required ? new FormControl(input.value || '', Validators.required) :
   											new FormControl(input.value || '');

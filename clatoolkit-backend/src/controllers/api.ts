@@ -16,7 +16,8 @@ import { default as User, UserModel } from "../models/User";
 export let getPlatformOpts = (req: Request, res: Response) => {
   const optsMap: any = {
     "trello": getTrelloBoards,
-    "slack": getSlackChannels
+    "slack": getSlackChannels,
+    "github": getGithubRepos
   };
 
   optsMap[req.params.platform](req, res);
@@ -89,6 +90,38 @@ export let getTrelloBoards = (req: Request, res: Response) => {
       return res.json({ opts: boardsResponse});
     });
   });
+
+};
+
+export let getGithubRepos = (req: Request, res: Response) => {
+
+  User.findOne({ email: req.user.email }, (err, user: UserModel) => {
+    const userToken = user.tokens.find(tok => tok.platform == "github").accessToken;
+    const githubRepoApiEndpoint = `https://api.github.com/user/repos?access_token=${userToken}`;
+
+    const opts = {
+      url: githubRepoApiEndpoint,
+      headers: {
+        "User-Agent": "CLAToolkit-Backend"
+      }
+    };
+
+    request(opts, (err, response, body) => {
+      if (err || response.statusCode != 200) {
+        console.error("Error grabbing github repos, error: " + err + ". Status Code: " + response.statusCode);
+      }
+
+      const reposResponse = [];
+
+      for (const repo of JSON.parse(body)) {
+        reposResponse.push({ key: repo.full_name, value: repo.full_name });
+      }
+
+      return res.json({ opts: reposResponse });
+
+    });
+  });
+
 
 };
 
