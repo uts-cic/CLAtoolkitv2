@@ -26,7 +26,7 @@ const getDbUser = async (usrEmail: string) => {
 
    Unit.find({ created_by: user._id }, (err, units) => {
      Unit.find({ users: user._id }, (err, inunits) => {
-       const allUnits = [];
+       let allUnits = [];
 
        inunits.forEach(inunit => {
          if (!units.some(u => u._id == inunit._id)) {
@@ -35,6 +35,10 @@ const getDbUser = async (usrEmail: string) => {
        });
 
        allUnits.concat(units);
+
+       if (inunits.length == 0) {
+         allUnits = units;
+       }
 
        return res.status(200).json({ units: allUnits });
      });
