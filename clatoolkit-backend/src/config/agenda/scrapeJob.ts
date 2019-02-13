@@ -13,30 +13,9 @@ import * as request from "request";
  * to create and send xAPI statements
  */
 
-// Temporary Mapping between social media and importer method as we transition from
-// python importers to new GraphQL importer
-// Add new social media here as they become available for import in GraphQL
-const importUrlForPlatform: any = {
-	"twitter": process.env.GRAPHQL_IMPORTER_URL,
-	"python_import": process.env.PYTHON_IMPORTER_URL
-};
-
-const graphQLImporter: string = "http://127.0.0.1:8080/graph";
+const graphQLImporter: string = process.env.GRAPHQL_IMPORTER_URL;
 
 const objectId = mongoose.Types.ObjectId;
-
-const getAttachedUserPlatforms = async (userPlatformIds: Array<string>): Promise<Array<UnitUserPlatformModel>> => {
-	const userPlatformObjectIds = userPlatformIds.map(id => objectId(id));
-	return UnitUserPlatform.find({
-		"_id": {
-			$in: userPlatformObjectIds
-		}
-	}, (err, userAttachedPlatforms: UnitUserPlatformModel[]) => {
-		if (err) { throw err; }
-
-		return userAttachedPlatforms;
-	});
-};
 
 /**
  * Job to perform Scraping
@@ -60,23 +39,18 @@ export let scrapeJob = (agenda: Agenda): void => {
 		// Array of platforms e.g.: ["twitter", "trello", "github"]
 		Unit.findOne(job.attrs.data.unitId, async (err, unit) => {
 			for (const platform of unit.platforms.map(plat => plat.platform)) {
-				let platType;
+				let importerArgs = platform + "(unit_id:\"" + job.attrs.data.unitId + "\",type:\"Import\"";
 
-				switch (platform) { 
-					case "twitter":
-						platType = "User";
-					break;
-					case "slack": 
-						platType = "Messages";
-					break;
+				if (platform == "trello") {
+					importerArgs = platform + "(unit_id:\"" + job.attrs.data.unitId + "\",type:\"Import\",trello_api_key:\"" + process.env.TRELLO_APP_ID + "\"";
 				}
 
 				// {"query": "query { twitter(unit_id:\"5c57bce193aab208347e30b4\",type:\"User\"){ data { id }}}"}
-				const body = { "query": "query { " + platform + "(unit_id:\"" + job.attrs.data.unitId + "\",type:\"" + platType + "\"){ data { id }}}"};
+				const body = { "query": "query { " + importerArgs + "){ data { id }}}"};
 				request.post(graphQLImporter, { json: body }, (err, httpResponse, body) => {
 					console.log("err: ", err);
-					console.log("httpResponse: ", httpResponse);
-					console.log("body: ", body);
+					// console.log("httpResponse: ", httpResponse);
+					// console.log("body: ", body);
 				});
 			}
 		});

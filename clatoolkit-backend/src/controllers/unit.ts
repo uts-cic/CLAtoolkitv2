@@ -1,7 +1,7 @@
 import * as async from "async";
 import * as crypto from "crypto";
 import { NextFunction, Request, Response } from "express";
-import { WriteError } from "mongodb";
+import { WriteError, ObjectId } from "mongodb";
 import * as nodemailer from "nodemailer";
 import * as passport from "passport";
 import { LocalStrategyInfo } from "passport-local";
@@ -100,6 +100,21 @@ export let getUnitById = async (req: Request, res: Response) => {
 		return res.status(200).json({ unit: unit });
 	});
 };
+
+
+export let importNow = async (req: Request, res: Response) => {
+	const unitId = req.params.id;
+
+	const scrapeJobsForUnit = await agenda.jobs({ "data.unitId": new ObjectId(unitId) });
+	for (const job of scrapeJobsForUnit) {
+		job.run();
+	}
+
+
+	return res.status(200).json({ success: true });
+
+};
+
 
 /**
  * POST Update Unit

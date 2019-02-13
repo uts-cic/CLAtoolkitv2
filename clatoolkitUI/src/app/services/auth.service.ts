@@ -4,6 +4,8 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 
 import { JwtHelperService } from '@auth0/angular-jwt';
 
+import { environment } from '../../environments/environment';
+
 @Injectable()
 export class AuthService {
 	jwt = new JwtHelperService();
@@ -13,7 +15,7 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) { }
 
   registerUser(formData, nextRoute, done) {
-  	const registerUrl = 'http://localhost:3000/auth/register/';
+  	const registerUrl = environment.backend_api + 'auth/register/';
 
   	delete formData.passwordConf;
 
@@ -32,7 +34,7 @@ export class AuthService {
   }
 
   loginUser(formData, nextRoute, done) {
-  	const loginUrl = 'http://localhost:3000/auth/login/';
+  	const loginUrl = environment.backend_api + 'auth/login/';
 
   	delete formData.passwordConf;
 
@@ -58,12 +60,12 @@ export class AuthService {
 
   // TODO: Refactor social media stuff to seperate service
   userHasSocialMediaTokenFor(socialMediaPlatform: string) {
-    const userSocialMediaTokenUrl = 'http://localhost:3000/auth/tokenCheck/';
+    const userSocialMediaTokenUrl = environment.backend_api + 'auth/tokenCheck/';
     return this.http.post(userSocialMediaTokenUrl, { platform: socialMediaPlatform });
   }
 
   async asyncUserHasSocialMediaTokenFor(socialMediaPlatform: string) {
-    const userSocialMediaTokenUrl = 'http://localhost:3000/auth/tokenCheck/';
+    const userSocialMediaTokenUrl = environment.backend_api + 'auth/tokenCheck/';
     return this.http.post(userSocialMediaTokenUrl, { platform: socialMediaPlatform }).toPromise()
       .then((res: any) => {
         if (res.error) { console.error("Error checking whether user has sm token for platform " +
@@ -74,7 +76,7 @@ export class AuthService {
   }
 
   async getSocialMediaOptionsForUser(socialMediaPlatform: string) {
-    const userSocialMediaGetOptsUrl = 'http://localhost:3000/social/' + socialMediaPlatform + '/opts';
+    const userSocialMediaGetOptsUrl = environment.backend_api + 'social/' + socialMediaPlatform + '/opts';
     let opts = undefined;
     return this.http.get(userSocialMediaGetOptsUrl).toPromise().then((res: any) => {
       // List of trello boards and ids

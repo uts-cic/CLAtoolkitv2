@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { UnitSetupService } from './unit-setup.service';
 
+import { environment } from '../../environments/environment';
+
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 
@@ -17,10 +19,18 @@ export class UnitService {
   constructor(private http: HttpClient, private router: Router, 
     private authService: AuthService, private unitSetupService: UnitSetupService) { }
 
+  importForUnit(unitId) {
+    
+    const importUrl = environment.backend_api + 'units/' + unitId + '/import';
+    this.http.get(importUrl).subscribe((res: any) => {
+        // console.log("RESPONSE: ", res);
+    });
+  }
+
   // Get Units for user from backend
   // Store units in service and return to frontend
   getUnitsForUser(): Observable<any> {
-  	const getUnitsUrl = 'http://localhost:3000/account/units'
+  	const getUnitsUrl = environment.backend_api + 'account/units'
 
   	return this.http.get(getUnitsUrl).map((res: any) => {
       // res = res;
@@ -32,7 +42,7 @@ export class UnitService {
   }
 
   getUnitById(id: string) {
-    const getUnitByIdUrl = 'http://localhost:3000/units/' + id;
+    const getUnitByIdUrl = environment.backend_api + 'units/' + id;
     return this.http.get(getUnitByIdUrl);
   }
 
@@ -61,7 +71,7 @@ export class UnitService {
   }
 
   registerUser(registerForm: {}) {
-  	const postRegisterUserToUnitUrl = 'http://localhost:3000/units/' + this.selectedUnitId + '/register/'
+  	const postRegisterUserToUnitUrl = environment.backend_api + 'units/' + this.selectedUnitId + '/register/'
   	// Check result here since we're gonna redirect
   	this.http.post(postRegisterUserToUnitUrl, registerForm).subscribe((res: any) => {
   		if (res.error) { console.error("Error occurred attempting to add user to unit: ", res.error); }

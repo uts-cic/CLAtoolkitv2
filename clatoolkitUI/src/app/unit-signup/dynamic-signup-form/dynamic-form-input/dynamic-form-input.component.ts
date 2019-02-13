@@ -6,6 +6,8 @@ import { InputBase } from '../input-base';
 import { AuthService } from '../../../services/auth.service';
 import { DynamicFormService } from '../dynamic-form.service';
 
+import { environment } from '../../../../environments/environment';
+
 @Component({
   selector: 'app-dynamic-form-input',
   templateUrl: './dynamic-form-input.component.html',
@@ -35,7 +37,7 @@ export class DynamicFormInputComponent implements OnInit {
 
   attachSocialMedia(): void {
 
-  	window.location.href = 'http://localhost:3000/social/' + this.input.key +
+  	window.location.href = environment.backend_api + 'social/' + this.input.key +
   	'?user=' + localStorage.getItem('clatk-token');
   }
 

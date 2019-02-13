@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http'; 
 
+import { environment } from '../../environments/environment';
+
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 
@@ -34,7 +36,7 @@ export class UnitSetupService {
   }
 
   getLearningRecordStores() {
-    const getLRSDetailsEndpoint: string = 'http://localhost:3000/lrs/';
+    const getLRSDetailsEndpoint: string = environment.backend_api + 'lrs/';
     return this.http.get(getLRSDetailsEndpoint)
   }
 
@@ -47,7 +49,7 @@ export class UnitSetupService {
   }
 
   sendUnitFormToBackend() {
-    const createUnitEndpoint: string = 'http://localhost:3000/units/';
+    const createUnitEndpoint: string = environment.backend_api + 'units/';
     // console.log(this.unitData);
     if (this.editId != '') {
       this.unitData.id = this.editId.slice(0, -1);

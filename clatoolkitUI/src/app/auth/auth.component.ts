@@ -30,6 +30,9 @@ export class AuthComponent implements OnInit {
     errors: undefined
   }
 
+  showLogin: boolean;
+  showRegister: boolean;
+
 
 
   nextRoute: string;
@@ -43,6 +46,22 @@ export class AuthComponent implements OnInit {
 
       this.nextRoute = params.next;
     });
+
+    this.showLogin = false;
+    this.showRegister = false;
+  }
+
+  showLoginForm() {
+    this.showLogin = true;
+  }
+
+  showRegisterForm() {
+    this.showRegister = true;
+  }
+
+  backForm() {
+    this.showLogin = false;
+    this.showRegister = false;
   }
 
   registerSubmit() {
@@ -55,7 +74,7 @@ export class AuthComponent implements OnInit {
   	}
   }
 
-  loginSubmit() {
+  loginSubmit(aafLogin: boolean) {
     console.log(this.formModel);
   	this.authService.loginUser(this.formModel, this.nextRoute, (err: any) => {
   		if (err) { console.error("Error occurred logging in: ", err); }
