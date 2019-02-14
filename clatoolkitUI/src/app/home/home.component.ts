@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit {
   	this.unitService.getUnitsForUser().subscribe((res: any) => {
       this.units = res;
       this.loadingUnits = false;
-      console.log("GOT UNITS: ", this.units);
+      // console.log("GOT UNITS: ", this.units);
   	});
   }
 

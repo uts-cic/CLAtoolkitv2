@@ -47,7 +47,7 @@ export class UnitSocialmediaSetupComponent implements OnInit {
   }
 
   submitUnitForm() {
-    console.log(this.unitFormModelStep2);
+    // console.log(this.unitFormModelStep2);
   	// this.validateSocialMediaInput() // Todo: later if required
 
   	this.unitSetupService.addSocialMediaDetails(this.unitFormModelStep2);

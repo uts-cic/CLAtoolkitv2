@@ -11,7 +11,7 @@ export class AuthGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     
-    console.log("next: ", next);
+    // console.log("next: ", next);
     if (!this.authService.isLoggedIn()) {
       // Slight behaviour change - return user to page they were trying to 
       // access previously after login/signup, to do this, we're adding

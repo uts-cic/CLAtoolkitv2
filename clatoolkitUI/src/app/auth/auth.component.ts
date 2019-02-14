@@ -40,9 +40,9 @@ export class AuthComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router, private activeRoute: ActivatedRoute) { }
 
   ngOnInit() {
-    console.log('this.activeRoute.snapshot.params: ', this.activeRoute.snapshot.params);
+    // console.log('this.activeRoute.snapshot.params: ', this.activeRoute.snapshot.params);
     this.activeRoute.queryParams.subscribe(params => {
-      console.log('params: ', params);
+      // console.log('params: ', params);
 
       this.nextRoute = params.next;
     });
@@ -75,7 +75,7 @@ export class AuthComponent implements OnInit {
   }
 
   loginSubmit(aafLogin: boolean) {
-    console.log(this.formModel);
+    // console.log(this.formModel);
   	this.authService.loginUser(this.formModel, this.nextRoute, (err: any) => {
   		if (err) { console.error("Error occurred logging in: ", err); }
   	});

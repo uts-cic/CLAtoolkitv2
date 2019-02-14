@@ -80,7 +80,7 @@ export class UnitLrsSetupComponent implements OnInit {
 
   newCustomLrs() {
   	this.showNewCustomLRSForm = !this.showNewCustomLRSForm;
-  	console.log("Custom lrs toggle: ", this.showNewCustomLRSForm);
+  	// console.log("Custom lrs toggle: ", this.showNewCustomLRSForm);
   }
 
   handleNewLRS(newLRS: LrsModel) {

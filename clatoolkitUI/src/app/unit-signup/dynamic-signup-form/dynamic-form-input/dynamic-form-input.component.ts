@@ -26,7 +26,7 @@ export class DynamicFormInputComponent implements OnInit {
   constructor(private authService: AuthService, private formService: DynamicFormService) { }
 
   ngOnInit() {
-     console.log(this.form.controls[this.input.key]);
+    // console.log(this.form.controls[this.input.key]);
   	this.authService.userHasSocialMediaTokenFor(this.input.key).subscribe((res: any) => {
   		if (res.error) { console.error("Error checking whether user has sm token for platform " +
   			this.input.key + ": " + res.error); }

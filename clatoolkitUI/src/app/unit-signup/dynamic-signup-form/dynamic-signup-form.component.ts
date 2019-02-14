@@ -21,13 +21,13 @@ export class DynamicSignupFormComponent implements OnInit {
   constructor(private dfs: DynamicFormService, private unitService: UnitService) { }
 
   ngOnInit() {
-  	console.log("INPUT inputs: ", this.inputs);
+  	// console.log("INPUT inputs: ", this.inputs);
   	this.form = this.dfs.toFormGroup(this.inputs);
   }
 
   submitSignUpForm() {
   	// this.unitService.registerUserSignup(this.form.value);
-  	console.log(JSON.stringify(this.form.value));
+  	// console.log(JSON.stringify(this.form.value));
   	this.unitService.registerUser(this.form.value);
   }
 

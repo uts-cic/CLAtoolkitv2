@@ -22,7 +22,7 @@ export class DynamicFormService {
   toFormGroup(inputs: InputBase<any>[]) {
   	let group: any = [];
 
-  	console.log('inputs ', inputs);
+  	// console.log('inputs ', inputs);
 
   	inputs.forEach(input => {
   		if (input.key == 'twitter') {
@@ -75,7 +75,7 @@ async getSignUpInputsFor(unit) {//: Observable<InputBase<any>[]> {
       		options = await this.authService.getSocialMediaOptionsForUser(platformName);
       	}
 
-      	console.log("DROPDOWN OPTIONS: ", options);
+      	// console.log("DROPDOWN OPTIONS: ", options);
 
       	inputs.push(new DropDownInput({
       		key: unitRequiredPlatforms.platform,

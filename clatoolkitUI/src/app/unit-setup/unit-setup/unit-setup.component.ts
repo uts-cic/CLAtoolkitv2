@@ -36,7 +36,7 @@ export class UnitSetupComponent implements OnInit {
   }
 
   submitUnitForm() {
-    console.log(this.unitFormModelStep1);
+    // console.log(this.unitFormModelStep1);
   	// this.validateUnitForm(); TODO: Later if need be (getting MVP working)
 
   	this.unitSetupService.addUnitDetails(this.unitFormModelStep1);
