@@ -91,7 +91,7 @@ Make sure to add the oauth app key/secrets to .env!
         # Add index.php to the list if you are using PHP
         index index.html;
 
-        server_name http://13.239.34.237;
+        server_name http://some_domain_ip;
 
         location / {
                 # First attempt to serve request as file, then
