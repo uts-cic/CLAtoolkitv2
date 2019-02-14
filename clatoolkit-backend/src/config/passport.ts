@@ -104,7 +104,7 @@ export const setupStrategies = (passport: any) => {
   passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_CONSUMER_KEY,
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-    callbackURL: "/social/twitter/callback",
+    callbackURL: process.env.HOST + "/social/twitter/callback",
     passReqToCallback: true
   }, (req: any, token: any, tokenSecret: any, profile: any, cb: any) => {
     processSocial("twitter", token, tokenSecret, profile, cb, req);
@@ -120,7 +120,7 @@ export const setupStrategies = (passport: any) => {
     passport.use(new TrelloStrategy({
       consumerKey: process.env.TRELLO_APP_ID,
       consumerSecret: process.env.TRELLO_APP_SECRET,
-      callbackURL: "/social/trello/callback",
+      callbackURL: process.env.HOST + "/social/trello/callback",
       passReqToCallback: true,
       trelloParams: {
         scope: "read,write",
@@ -139,7 +139,7 @@ export const setupStrategies = (passport: any) => {
     passport.use(new SlackStrategy({
       clientID: process.env.SLACK_APP_ID,
       clientSecret: process.env.SLACK_APP_SECRET,
-      callbackURL: "/social/slack/callback",
+      callbackURL: process.env.HOST + "/social/slack/callback",
       passReqToCallback: true,
       skipUserProfile: false,
       scope: /*["identity.basic", "channels:read", "channels:history", "files:read", "dnd:read", "groups:read", "groups:history",
@@ -162,7 +162,7 @@ export const setupStrategies = (passport: any) => {
     passport.use(new GithubStrategy({
       clientID: process.env.GITHUB_APP_ID,
       clientSecret: process.env.GITHUB_APP_SECRET,
-      callbackURL: "/social/github/callback",
+      callbackURL: process.env.HOST + "/social/github/callback",
       passReqToCallback: true,
     }, (req: any, accessToken: any, refreshToken: any, profile: any, cb: any) => {
       processSocial("github", accessToken, refreshToken, profile, cb, req);
