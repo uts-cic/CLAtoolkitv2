@@ -48,25 +48,25 @@ Make sure to add the oauth app key/secrets to .env!
 - Clone repository
 - npm install all dependencies of all folders
   - e.g.: 
-  - ```bash cd clatoolkit-backend && npm install && cd ..```
-  - ```bash cd clatoolkitUI && npm install && cd ..```
-  - ```bash cd social-imports && npm install && cd ..```
+  - ```cd clatoolkit-backend && npm install && cd ..```
+  - ```cd clatoolkitUI && npm install && cd ..```
+  - ```cd social-imports && npm install && cd ..```
 - Start UI/backend/importers 
-  - backend: ```bash /clatoolkit-backend/$: npm start```
-  - ui: ```bash /clatoolkitUI/$: npm start```
-  - importer: ```bash /social-networks-importer/$: node graphql.js```
+  - backend: ```/clatoolkit-backend/$: npm start```
+  - ui: ```/clatoolkitUI/$: npm start```
+  - importer: ```/social-networks-importer/$: node graphql.js```
 
 # Installation Instructions (remote/web)
 - Download and Install MongoDB (https://www.mongodb.com/download-center/community)
 - Clone repository
 - npm install all dependencies of all folders
   - e.g.: 
-  - ```bash cd clatoolkit-backend && npm install && cd ..```
-  - ```bash cd clatoolkitUI && npm install && cd ..```
-  - ```bash cd social-imports && npm install && cd ..```
+  - ```cd clatoolkit-backend && npm install && cd ..```
+  - ```cd clatoolkitUI && npm install && cd ..```
+  - ```cd social-imports && npm install && cd ..```
 
  ## Install and Configure Webserver (nginx)
- ```bash Sudo apt-get install nginx```
+ ```sudo apt-get install nginx```
 
  Example server config (http only):
  ```
