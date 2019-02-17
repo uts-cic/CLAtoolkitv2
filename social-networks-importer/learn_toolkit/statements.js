@@ -16,6 +16,7 @@ function twitter(posts, useremail) {
         stmt.object.objectType ="Activity";
         stmt.object.definition.name["en-US"] = "Tweet";
         stmt.object.definition.description["en-US"] = post.full_text;
+        stmt.object.definition.type = "https://w3id.org/xapi/acrossx/activities/note";
         stmt.context.platform = "Twitter";
         post.entities.hashtags.forEach( (hashtag) => {
             var tempObject = lrs.object();
@@ -49,6 +50,7 @@ function trelloStmtMap(stmt, post) {
             stmt.object.definition.name["en-US"] = post.data.card.name;
             stmt.object.id = "https://trello.com/c/" + post.data.card.shortLink;
             stmt.object.definition.description["en-US"] = "Trello Card";
+            stmt.object.definition.type = "https://w3id.org/xapi/acrossx/activities/note";
             stmt.result = {};
             stmt.result.response = post.data.text;
 
@@ -164,6 +166,7 @@ function slack(posts, useremail) {
         stmt.object.objectType ="Activity";
         stmt.object.definition.name["en-US"] = "Slack Message";
         stmt.object.definition.description["en-US"] = post.text;
+        stmt.object.definition.type = "https://w3id.org/xapi/acrossx/activities/note";
         stmt.context.platform = "Slack";
         statements.push(stmt);
     });
