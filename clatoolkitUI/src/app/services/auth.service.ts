@@ -14,6 +14,12 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
+  storeToken(jwtToken) {
+    const decoded = this.jwt.decodeToken(jwtToken);
+    this.user = decoded;
+    localStorage.setItem('clatk-token', jwtToken);
+  }
+
   registerUser(formData, nextRoute, done) {
   	const registerUrl = environment.backend_api + 'auth/register/';
 

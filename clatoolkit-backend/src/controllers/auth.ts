@@ -9,6 +9,30 @@ import { AuthToken, default as User, UserModel } from "../models/User";
 import * as jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const AAF_SECRET = process.env.AAF_SECRET;
+
+const FRONTEND_URL = process.env.CLATK_FRONTEND;
+
+export let postAAFLogin = (req: Request, res: Response) => {
+  const jwt_aud = process.env.JWT_AUD;
+  const aafTokenDecoded: any = jwt.verify(req.body, AAF_SECRET, { audience: jwt_aud });
+
+  User.findOne({ email: aafTokenDecoded.email }, (err, userDoc) => {
+    if (err) { console.error("Error signing in user via AAF: ", err); }
+
+    if (userDoc) {
+      const frontEndUser = {
+        id: userDoc._id,
+        email: userDoc.email
+      };
+
+      const token = jwt.sign(frontEndUser, JWT_SECRET);
+
+      return res.redirect(FRONTEND_URL + "?user=" + token);
+
+    }
+  });
+};
 
 /**
  * POST /tokenCheck

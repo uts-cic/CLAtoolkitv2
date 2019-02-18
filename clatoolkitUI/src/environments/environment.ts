@@ -9,5 +9,6 @@ export const environment = {
   frontend_host: "http://localhost:4200/",
   ssl: false,
 
-  backend_api: "http://localhost:3000/"
+  backend_api: "http://localhost:3000/",
+  AAF_url: "https://rapid.test.aaf.edu.au/jwt/authnrequest/research/TzFu_9SgBIyDuRFpvzK5Vg"
 };

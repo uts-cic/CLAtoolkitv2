@@ -16,12 +16,7 @@ class Account {
     this.router.post("/login", authController.postLogin);
     this.router.post("/register", authController.postSignup);
     this.router.post("/tokenCheck", Auth.JwtAuthorized, authController.postUserSocialTokenExists);
-    /*
-    this.router.get("/", passportConfig.isAuthenticated, userController.getAccount);
-    this.router.post("/profile", passportConfig.isAuthenticated, userController.postUpdateProfile);
-    this.router.post("/password", passportConfig.isAuthenticated, userController.postUpdatePassword);
-    this.router.post("/delete", passportConfig.isAuthenticated, userController.postDeleteAccount);
-    this.router.get("/unlink/:provider", passportConfig.isAuthenticated, userController.getOauthUnlink);*/
+    this.router.post("/jwt", authController.postAAFLogin);
   }
 }
 

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
+import { environment } from '../../environments/environment';
+
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
@@ -76,9 +78,15 @@ export class AuthComponent implements OnInit {
 
   loginSubmit(aafLogin: boolean) {
     // console.log(this.formModel);
-  	this.authService.loginUser(this.formModel, this.nextRoute, (err: any) => {
-  		if (err) { console.error("Error occurred logging in: ", err); }
-  	});
+    if (!aafLogin) {
+      this.authService.loginUser(this.formModel, this.nextRoute, (err: any) => {
+        if (err) { console.error("Error occurred logging in: ", err); }
+      });
+    } else {
+      // redirect to AAF login
+      window.location.href = environment.AAF_url;
+    }
+
   }
 
 }
