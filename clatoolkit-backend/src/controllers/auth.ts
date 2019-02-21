@@ -31,6 +31,25 @@ export let postAAFLogin = (req: Request, res: Response) => {
 
       return res.redirect(FRONTEND_URL + "?user=" + token);
 
+    } else {
+      const user = new User({
+        email: aafTokenDecoded.email,
+        password: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) // random string as pw
+      });
+
+      user.save((err) => {
+        if (err) { return res.status(400).json({ error: err }); }
+
+        const frontEndUser = {
+          id: user._id,
+          email: user.email
+        };
+
+        const token = jwt.sign(frontEndUser, JWT_SECRET);
+        // return res.status(200).json({ token: token });
+
+        return res.redirect(FRONTEND_URL + "?user=" + token);
+      });
     }
   });
 };
