@@ -15,6 +15,7 @@ const FRONTEND_URL = process.env.CLATK_FRONTEND;
 
 export let postAAFLogin = (req: Request, res: Response) => {
   const jwt_aud = process.env.JWT_AUD;
+  console.log("REQ BODY: ", req.body);
   const aafTokenDecoded: any = jwt.verify(req.body, AAF_SECRET, { audience: jwt_aud });
 
   User.findOne({ email: aafTokenDecoded.email }, (err, userDoc) => {
