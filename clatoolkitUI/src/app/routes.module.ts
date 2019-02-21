@@ -18,8 +18,9 @@ import { UnitSignupComponent } from './unit-signup/unit-signup.component';
 
 
 const routes: Routes = [
-	{ path: '', redirectTo: '/home', pathMatch: 'full' },
+	{ path: '', redirectTo: 'home', pathMatch: 'full' },
 	{ path: 'login', component: AuthComponent },
+	{ path: 'aaf/:user', component: AuthComponent },
 	{ path: 'home', 
 	  component: HomeComponent,
 	  canActivate: [AuthGuard] 
@@ -48,6 +49,7 @@ const routes: Routes = [
 		component: UnitSetupComponent,
 		canActivate: [AuthGuard, IsUnitOwnerGuard]
 	}
+
 ];
 
 @NgModule({

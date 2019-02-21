@@ -18,6 +18,7 @@ export class AuthService {
     const decoded = this.jwt.decodeToken(jwtToken);
     this.user = decoded;
     localStorage.setItem('clatk-token', jwtToken);
+    this.router.navigate(['/home']);
   }
 
   registerUser(formData, nextRoute, done) {

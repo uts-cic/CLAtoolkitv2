@@ -15,10 +15,13 @@ const FRONTEND_URL = process.env.CLATK_FRONTEND;
 
 export let postAAFLogin = (req: Request, res: Response) => {
   const jwt_aud = process.env.JWT_AUD;
-  //  console.log("JWT : ", req.body.assertion);
+  // console.log("JWT : ", req.body.assertion);
   const aafTokenDecoded: any = jwt.verify(req.body.assertion, AAF_SECRET, { audience: jwt_aud });
+  console.log("decoded: ", aafTokenDecoded);
 
-  User.findOne({ email: aafTokenDecoded.email }, (err, userDoc) => {
+  const _email = aafTokenDecoded["https://aaf.edu.au/attributes"].mail;
+
+  User.findOne({ email: _email }, (err, userDoc) => {
     if (err) { console.error("Error signing in user via AAF: ", err); }
 
     if (userDoc) {
@@ -29,11 +32,11 @@ export let postAAFLogin = (req: Request, res: Response) => {
 
       const token = jwt.sign(frontEndUser, JWT_SECRET);
 
-      return res.redirect(FRONTEND_URL + "?user=" + token);
+      return res.redirect(FRONTEND_URL + "aaf/" + token);
 
     } else {
       const user = new User({
-        email: aafTokenDecoded.email,
+        email: _email,
         password: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) // random string as pw
       });
 
@@ -48,7 +51,7 @@ export let postAAFLogin = (req: Request, res: Response) => {
         const token = jwt.sign(frontEndUser, JWT_SECRET);
         // return res.status(200).json({ token: token });
 
-        return res.redirect(FRONTEND_URL + "?user=" + token);
+        return res.redirect(FRONTEND_URL + "aaf/" + token);
       });
     }
   });

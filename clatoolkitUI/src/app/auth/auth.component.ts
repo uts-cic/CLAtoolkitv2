@@ -43,8 +43,19 @@ export class AuthComponent implements OnInit {
 
   ngOnInit() {
     // console.log('this.activeRoute.snapshot.params: ', this.activeRoute.snapshot.params);
+    const userTok = this.activeRoute.snapshot.paramMap.get("user");
+    console.log("userTok: ", userTok);
+    console.log(this.activeRoute.snapshot.params); 
+
+    if (userTok) {
+	this.authService.storeToken(userTok);
+
+//        localStorage.setItem('clatk-token', userTok);
+//        this.router.navigate(['/home']);
+    }
+
     this.activeRoute.queryParams.subscribe(params => {
-      // console.log('params: ', params);
+      console.log('params: ', params);
 
       this.nextRoute = params.next;
     });
