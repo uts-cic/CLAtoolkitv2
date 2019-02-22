@@ -9,8 +9,7 @@ export class AuthGuard implements CanActivate {
 	constructor(private authService: AuthService, private router: Router) {}
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    console.log("ssssss");    
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean { 
     
     let tokenParam;
     // console.log("next: ", next);
@@ -20,7 +19,7 @@ export class AuthGuard implements CanActivate {
       // url query param "next", which will determine where login controller
       // redirects after login/signup
 
-      console.log("QUERY PARAMS: ", next.queryParams);
+      // console.log("QUERY PARAMS: ", next.queryParams);
       if (next.queryParams.user) {
         this.authService.storeToken(next.queryParams['user']);
         return true;

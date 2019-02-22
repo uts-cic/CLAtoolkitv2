@@ -17,7 +17,6 @@ export let postAAFLogin = (req: Request, res: Response) => {
   const jwt_aud = process.env.JWT_AUD;
   // console.log("JWT : ", req.body.assertion);
   const aafTokenDecoded: any = jwt.verify(req.body.assertion, AAF_SECRET, { audience: jwt_aud });
-  console.log("decoded: ", aafTokenDecoded);
 
   const _email = aafTokenDecoded["https://aaf.edu.au/attributes"].mail;
 
