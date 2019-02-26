@@ -51,15 +51,42 @@
 				placeholder="Enter a Description - What is this Unit about?" />
 
 				<!-- TODO: Add a Date Picker -->
-				<input type="text" id="unit-start-date" name="start-date" class="form-control input-sm my-2"
+				<div class="input-group">
+					<input class="form-control input-sm my-2" placeholder="Start Date"
+						name="start-date" [(ngModel)]="unitFormModelStep1.startDate" ngbDatepicker #d="ngbDatepicker"
+						(focus)="d.toggle()">
+					<!-- <div class="input-group-append"> -->
+						<!-- <button class="btn btn-sm btn-outline-secondary" (click)="d.toggle()" type="button" style="height: 39px; padding-top: 6px; padding-bottom: 6px; margin-top: 8px; margin-bottom: 8px;">
+							<i class="material-icons" style="margin-left: -216px;">
+                    			calendar_today
+                  			</i>
+						</button> -->
+					<!-- </div> -->
+				</div>
+
+
+				<!--<input type="text" id="unit-start-date" name="start-date" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.startDate"
-				placeholder="Unit Start Date" />
+				placeholder="Unit Start Date" /> -->
+
+				<div class="input-group">
+					<input class="form-control input-sm my-2" placeholder="End Date"
+						name="end-date" [(ngModel)]="unitFormModelStep1.endDate" ngbDatepicker #de="ngbDatepicker"
+						(click)="de.toggle()">
+					<!-- <div class="input-group-append"> -->
+						<!-- <button class="btn btn-sm btn-outline-secondary" (click)="d.toggle()" type="button" style="height: 39px; padding-top: 6px; padding-bottom: 6px; margin-top: 8px; margin-bottom: 8px;">
+							<i class="material-icons" style="margin-left: -216px;">
+                    			calendar_today
+                  			</i>
+						</button> -->
+					<!-- </div> -->
+				</div>
 
 
-				<!-- TODO: Add a Date Picker -->
+				<!-- TODO: Add a Date Picker --
 				<input type="text" id="unit-end-date" name="end-date" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.endDate"
-				placeholder="Unit End Date" />
+				placeholder="Unit End Date" /> -->
 
 				<input type="textarea" id="ethics-statement" name="ethics" class="form-control input-sm my-2"
 				[(ngModel)]="unitFormModelStep1.ethicsStatement"

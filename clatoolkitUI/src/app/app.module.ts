@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 // Modules
 import { Router } from './routes.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap/datepicker/ngb-date-parser-formatter';
 
 // Components
 import { AppComponent } from './app.component';
@@ -27,6 +28,7 @@ import { UnitService } from './services/unit.service';
 import { UnitSetupService } from './services/unit-setup.service';
 import { AuthTokenInterceptor } from './interceptors/auth-token.interceptor';
 import { DynamicFormService } from './unit-signup/dynamic-signup-form/dynamic-form.service';
+import { NgbDateCustomParserFormatter } from './services/datepickerformatparser.service';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -68,6 +70,7 @@ import { IsUnitOwnerGuard } from './guards/isunitowner.guard';
     IsUnitOwnerGuard,
     UnitSetupService,
     DynamicFormService,
+    { provide: NgbDateParserFormatter, useClass: NgbDateCustomParserFormatter },
     // Interceptor Provider dec
     {
       provide: HTTP_INTERCEPTORS,

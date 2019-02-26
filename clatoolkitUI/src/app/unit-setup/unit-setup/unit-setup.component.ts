@@ -35,6 +35,10 @@ export class UnitSetupComponent implements OnInit {
     }
   }
 
+  closeCalender(dp) {
+    dp.close();
+  }
+
   submitUnitForm() {
     // console.log(this.unitFormModelStep1);
   	// this.validateUnitForm(); TODO: Later if need be (getting MVP working)

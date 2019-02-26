@@ -64,6 +64,8 @@ const createUnitFromData = async (user: any, unit: any, social_media: any, lrs: 
 		}
 	}
 
+	console.log(unit);
+
 	return {
 		name: unit.name,
 		code: unit.code,
@@ -71,9 +73,8 @@ const createUnitFromData = async (user: any, unit: any, social_media: any, lrs: 
 		description: unit.description,
 		ethics_statement: unit.ethicsStatement,
 
-		start_date: unit.startDate,
-		end_date: unit.endDate,
-
+		start_date: new Date(unit.startDate.year, unit.startDate.month, unit.startDate.day, 0, 0, 0, 0),
+		end_date: new Date(unit.endDate.year, unit.endDate.month, unit.endDate.day, 0, 0, 0, 0),
 		// users: [],
 		enabled: true,
 

@@ -65,6 +65,8 @@ export class UnitSetupService {
     unitDetails.description = unit.description;
     unitDetails.startDate = unit.start_date;
     unitDetails.endDate = unit.end_date;
+    // unitDetails.startDate = new Date(unit.start_date.year, unit.start_date.month, unit.start_date.day, 0, 0, 0, 0);
+    // unitDetails.endDate = new Date(unit.end_date.year, unit.end_date.month, unit.end_date.day, 0, 0, 0, 0);
     unitDetails.ethicsStatement = unit.ethics_statement;
 
     this.unitData.unit = unitDetails;
