@@ -19,6 +19,7 @@ export let postAAFLogin = (req: Request, res: Response) => {
   const aafTokenDecoded: any = jwt.verify(req.body.assertion, AAF_SECRET, { audience: jwt_aud });
 
   const _email = aafTokenDecoded["https://aaf.edu.au/attributes"].mail;
+  const _name = aafTokenDecoded["https://aaf.edu.au/attributes"].cn;
 
   User.findOne({ email: _email }, (err, userDoc) => {
     if (err) { console.error("Error signing in user via AAF: ", err); }
@@ -37,6 +38,9 @@ export let postAAFLogin = (req: Request, res: Response) => {
       const user = new User({
         email: _email,
         password: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) // random string as pw
+        profile: {
+          name: _name
+        }
       });
 
       user.save((err) => {
@@ -115,6 +119,9 @@ export let postSignup = (req: Request, res: Response, next: NextFunction) => {
   const user = new User({
     email: formData.email,
     password: formData.password,
+    profile: {
+      name: formData.name
+    }
   });
 
   User.findOne({ email: formData.email }, (err, existingUser) => {
