@@ -38,7 +38,7 @@ module.exports.Messages = async function(args) {
 								console.log("SLACK RESULTS: ", result);
 
 								db.collection('lrs').findOne({ _id: new ObjectId(unit.lrs)}, async (err, unitLrs) => {
-									dataextract = await lrs(result.messages, "slack", unitLrs, res.email);
+									dataextract = await lrs(result.messages, "slack", unitLrs, res);
 									result = dataextract.length + " statements Added for Slack";
 
 								});

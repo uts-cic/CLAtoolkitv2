@@ -50,7 +50,7 @@ module.exports.User = async function(args) {
 							if (err) console.error(err);
 
 							if (unitLrs) {
-								dataextract = await lrs(tmpResult.data, "twitter", unitLrs, res.email);
+								dataextract = await lrs(tmpResult.data, "twitter", unitLrs, res);
 								result = dataextract.length + " statements Added for Twitter";
 							}
 						});

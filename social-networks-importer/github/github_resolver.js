@@ -56,8 +56,8 @@ module.exports.Import = function(args) {
 										if (err) console.error(err);
 
 										if (unitLrs) {
-											await lrs(result, "github", unitLrs, res.email);
-											await lrs(issues, "github", unitLrs, res.email);
+											await lrs(result, "github", unitLrs, res);
+											await lrs(issues, "github", unitLrs, res);
 											
 											re.data = result.concat(issues);
 											resolve(re);
@@ -107,7 +107,7 @@ module.exports.Commits = function(args) {
 										if (err) console.error(err);
 
 										if (unitLrs) {
-											await lrs(result, "github", unitLrs, res.email);
+											await lrs(result, "github", unitLrs, res);
 											re = {}
 											re.data = result;
 											resolve(re);
