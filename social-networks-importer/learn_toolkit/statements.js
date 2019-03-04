@@ -2,13 +2,14 @@
 const lrs = require('./lrs_objects');
 
 
-function twitter(posts, useremail) {
+function twitter(posts, user) {
     let statements = [];
     posts.forEach( (post) => {
 
         let stmt = lrs.statement();
         stmt.actor.objectType = "Agent";
-        stmt.actor.account.name = useremail;
+        stmt.actor.name = user.profile.name;
+        stmt.actor.account.name = user.email;
         stmt.actor.account.homePage = "http://www.twitter.com/" + post.user.screen_name;
         stmt.verb.id = "http://activitystrea.ms/create";
         stmt.verb.display["en-US"] = "created";
@@ -133,7 +134,7 @@ function trelloStmtMap(stmt, post) {
 }
 
 
-function trello(posts, useremail) {
+function trello(posts, user) {
     let statements = [];
     let supported_actions = ["commentCard", "createBoard", "updateCard", "createCard"]; // temporary until all stmts implemented (there's a lot for trello)
 
@@ -141,7 +142,8 @@ function trello(posts, useremail) {
         let stmt = lrs.statement();
         if (supported_actions.indexOf(post.type) != -1) {
             stmt.actor.objectType = "Agent";
-            stmt.actor.account.name = useremail;
+            stmt.actor.name = user.profile.name;
+            stmt.actor.account.name = user.email;
             stmt.actor.account.homePage = "http://temporaryHomepageUrl.com/" + post.idMemberCreator;
             stmt = trelloStmtMap(stmt, post);
             statements.push(stmt);
@@ -152,13 +154,14 @@ function trello(posts, useremail) {
     return statements;
 }
 
-function slack(posts, useremail) {
+function slack(posts, user) {
     let statements = [];
     let channel = posts.channel;
     posts.forEach( (post) => {
         let stmt = lrs.statement();
         stmt.actor.objectType = "Agent";
-        stmt.actor.account.name = useremail;
+        stmt.actor.name = user.profile.name;
+        stmt.actor.account.name = user.email;
         stmt.actor.account.homePage = "http://uts-cic.slack.com/messages/" + post.user;
         stmt.verb.id = "http://activitystrea.ms/create";
         stmt.verb.display["en-US"] = "created";
@@ -173,12 +176,13 @@ function slack(posts, useremail) {
     return statements;
 }
 
-function github(posts, useremail) {
+function github(posts, user) {
     let statements = [];
     posts.forEach( (post) => {
         let stmt = lrs.statement();
         stmt.actor.objectType = "Agent";
-        stmt.actor.account.name = useremail;
+        stmt.actor.name = user.profile.name;
+        stmt.actor.account.name = user.email;
         if (post.author) {
             stmt.actor.account.homePage = "http://github.com/" + post.author.login;
         }
@@ -210,19 +214,19 @@ function github(posts, useremail) {
     return statements;
 }
 
-module.exports = function(post, type, email) {
+module.exports = function(post, type, user) {
     switch(type) {
         case 'twitter': 
-            return twitter(post, email)
+            return twitter(post, user)
             break;
         case 'slack': 
-            return slack(post, email)
+            return slack(post, user)
             break;
         case 'github':
-            return github(post, email)
+            return github(post, user)
             break;
         case 'trello':
-            return trello(post, email);
+            return trello(post, user);
             break;
     }
 }

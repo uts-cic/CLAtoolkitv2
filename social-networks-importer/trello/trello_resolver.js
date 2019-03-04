@@ -38,7 +38,7 @@ module.exports.Actions = async function(args) {
 										if (err) { console.error(err); reject(err); }
 
 										if (unitLrs) {
-											await lrs(result, "trello", unitLrs, res.email); 
+											await lrs(result, "trello", unitLrs, res); 
 											re.data = re.data.concat(result);
 											resolve(re);
 										}
