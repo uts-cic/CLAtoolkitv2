@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
 
+<<<<<<< HEAD
   frontend_host: "http://130.148.223/",
   port: "",
   ssl: false,
