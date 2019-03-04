@@ -10,5 +10,5 @@ export const environment = {
   ssl: false,
 
   backend_api: "http://localhost:3000/",
-  AAF_url: "https://rapid.test.aaf.edu.au/jwt/authnrequest/research/uipTf8Va3aiPNGQ27luPvA"
+  AAF_url: "AAF_URL"
 };
